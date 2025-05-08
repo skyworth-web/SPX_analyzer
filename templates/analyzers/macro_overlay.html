@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block title %}Macro Overlay{% endblock %} {% block
+content %}
+<div class="analyzer-container">
+  <h2>{{ analyzer.description }}</h2>
+
+  {% if results.error %}
+  <div class="error-message">{{ results.error }}</div>
+  {% else %}
+  <div class="macro-grid">
+    <div class="macro-card">
+      <h3>SPX Price</h3>
+      <div class="value">
+        {{ results.spx_price|default('N/A', true)|round(2) }}
+      </div>
+    </div>
+
+    <div class="macro-card">
+      <h3>10Y Treasury Yield</h3>
+      <div class="value">
+        {{ results.indicators.treasury_10y|default('N/A', true) }}%
+      </div>
+    </div>
+
+    <div class="macro-card">
+      <h3>VIX</h3>
+      <div class="value">{{ results.indicators.vix|default('N/A', true) }}</div>
+    </div>
+
+    <div class="macro-card">
+      <h3>Dollar Index (DXY)</h3>
+      <div class="value">{{ results.indicators.dxy|default('N/A', true) }}</div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

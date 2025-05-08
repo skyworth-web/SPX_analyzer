@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Skew Analyzer{% endblock %}
+
+{% block content %}
+<div class="analyzer-container">
+    <h2>{{ analyzer.description }}</h2>
+    
+    {% if results.error %}
+    <div class="error-message">{{ results.error }}</div>
+    {% else %}
+    <div class="expiry-selector">
+        <select id="expiry-select">
+            {% for expiry in results.skew_data.keys() %}
+            <option value="{{ expiry }}" {% if expiry == results.primary_expiry %}selected{% endif %}>
+                {{ expiry }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    {% for expiry, data in results.skew_data.items() %}
+    <div class="skew-results" data-expiry="{{ expiry }}" {% if expiry != results.primary_expiry %}style="display:none"{% endif %}>
+        <h3>Expiry: {{ expiry }}</h3>
+        <div class="skew-metrics">
+            <p>Put Slope: {{ data.put_slope|round(6) }}</p>
+            <p>Call Slope: {{ data.call_slope|round(6) }}</p>
+            <p>Skew Ratio: {{ data.skew_ratio|round(2) }}</p>
+            <p>Put Count: {{ data.put_count }}</p>
+            <p>Call Count: {{ data.call_count }}</p>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+{% block scripts %}
+<script>
+document.getElementById('expiry-select').addEventListener('change', function() {
+    const selected = this.value;
+    document.querySelectorAll('.skew-results').forEach(el => {
+        el.style.display = el.dataset.expiry === selected ? 'block' : 'none';
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -254,3 +254,58 @@ body {
     color: #e74c3c;
     font-style: italic;
 }
+
+/* BS Deviation */
+.positive {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.negative {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* Skew Analyzer */
+.expiry-selector {
+    margin: 1rem 0;
+}
+
+.expiry-selector select {
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.skew-metrics {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+/* Macro Overlay */
+.macro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.macro-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.macro-card h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.macro-card .value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}

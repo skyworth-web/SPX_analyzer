@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% block title %}BS Deviation Analyzer{% endblock %}
+{% block content %}
+<div class="analyzer-container">
+  <h2>{{ analyzer.description }}</h2>
+
+  {% if results.error %}
+  <div class="error-message">{{ results.error }}</div>
+  {% else %}
+  <div class="summary">
+    <p>Max Deviation: {{ (results.summary.max_deviation * 100)|round(2) }}%</p>
+    <p>Avg Deviation: {{ (results.summary.avg_deviation * 100)|round(2) }}%</p>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Strike</th>
+        <th>Type</th>
+        <th>Market</th>
+        <th>Theoretical</th>
+        <th>Deviation</th>
+        <th>IV</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in results.deviations %}
+      <tr>
+        <td>{{ d.strike }}</td>
+        <td>{{ d.type }}</td>
+        <td>{{ d.market|round(2) }}</td>
+        <td>{{ d.theoretical|round(2) }}</td>
+        <td
+          class="{% if d.deviation > 0 %}positive{% else %}negative{% endif %}"
+        >
+          {{ (d.deviation * 100)|round(2) }}%
+        </td>
+        <td>{{ d.iv|round(4) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}
