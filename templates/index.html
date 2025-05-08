@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block title %}Dashboard Overview{% endblock %} {%
+block content %}
+<div class="dashboard-container">
+  <h2>SPX Dashboard Overview</h2>
+
+  {% if error %}
+  <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+
+  <div class="spot-card">
+    <h3>Current SPX Price</h3>
+    <div class="price">{{ spot_price|default('N/A', true) }}</div>
+  </div>
+
+  <div class="analyzers-overview">
+    <h3>Analyzers</h3>
+    {% for name, data in analyzers.items() %}
+    <div class="analyzer-card">
+      <h4>{{ data.description }}</h4>
+      <p>Last updated: {{ data.results.get('timestamp', 'Never') }}</p>
+      {% if data.results.get('error') %}
+      <p class="error">{{ data.results.error }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

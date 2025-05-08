@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block title %}Spread Analyzer{% endblock %} {%
+block content %}
+<div class="analyzer-container">
+  <h2>{{ analyzer.description }}</h2>
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %} {% if results.error %}
+  <div class="no-data">{{ results.error }}</div>
+  {% else %}
+  <div class="results-panel">
+    <p>Last updated: {{ results.timestamp }}</p>
+    <p>
+      Found {{ results.summary.put_count }} puts and {{
+      results.summary.call_count }} calls
+    </p>
+
+    {% if results.puts %}
+    <div class="puts-table">
+      <h3>Put Options</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Strike</th>
+            <th>Bid</th>
+            <th>Ask</th>
+            <th>IV</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for put in results.puts %}
+          <tr>
+            <td>{{ put.strike }}</td>
+            <td>{{ put.bid }}</td>
+            <td>{{ put.ask }}</td>
+            <td>{{ put.iv }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

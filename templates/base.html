@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SPX Dashboard - {% block title %}{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+        {% if analyzers and 'spread' in analyzers %}
+        <li>
+          <a href="{{ url_for('spread.spread_dashboard') }}">Spread Analyzer</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <main>{% block content %}{% endblock %}</main>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
