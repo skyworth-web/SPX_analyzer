@@ -1,311 +1,64 @@
-/* Base Styles */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --success-color: #27ae60;
-    --danger-color: #e74c3c;
-    --light-color: #ecf0f1;
-    --dark-color: #2c3e50;
-}
-
+/* General Body Styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f7fa;
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa; /* Light background for better contrast */
+    color: #343a40; /* Dark text for readability */
 }
 
-/* Header Styles */
-.header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+/* Navbar Styles */
+.navbar {
+    background-color: #007bff; /* Primary color for the navbar */
 }
 
-.header h1 {
-    margin: 0;
-    font-size: 1.5rem;
+.navbar-brand, .navbar-nav .nav-link {
+    color: black !important; /* White text for navbar items */
 }
 
-/* Navigation Styles */
-.main-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 1rem 0 0 0;
-    display: flex;
-    gap: 1.5rem;
+.navbar-nav .nav-link:hover {
+    color: #0c57a3 !important; /* Lighter color on hover */
 }
 
-.main-nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 0;
-    border-bottom: 2px solid transparent;
-    transition: border-color 0.3s;
+/* Card Styles */
+.card {
+    border: 1px solid #dee2e6; /* Light border for cards */
+    border-radius: 0.5rem; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: transform 0.2s; /* Smooth hover effect */
 }
 
-.main-nav a:hover {
-    border-bottom-color: var(--secondary-color);
+.card:hover {
+    transform: scale(1.02); /* Slightly enlarge card on hover */
 }
 
-/* Content Styles */
-.content {
-    padding: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
+/* Card Header Styles */
+.card-header {
+    background-color: #007bff; /* Primary color for card headers */
+    color: white; /* White text for card headers */
 }
 
-.analyzer-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.analyzer-container h2 {
-    margin-top: 0;
-    color: var(--primary-color);
-}
-
-.last-updated, .spot-price {
-    color: #666;
-    margin: 0.5rem 0;
-}
-
-/* Control Panel Styles */
-.control-panel {
-    display: flex;
-    gap: 1rem;
-    margin: 1.5rem 0;
-    align-items: center;
-}
-
+/* Button Styles */
 .btn {
-    padding: 0.5rem 1.5rem;
-    background-color: var(--secondary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s;
+    background-color: #28a745; /* Green button color */
+    color: white; /* White text for buttons */
 }
 
 .btn:hover {
-    background-color: #2980b9;
+    background-color: #218838; /* Darker green on hover */
 }
 
-.form-select {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    min-width: 150px;
+/* Analyzer Content Area */
+.analyzer-content {
+    min-height: 150px; /* Minimum height for content area */
+    padding: 1rem; /* Padding for inner content */
+    background-color: #ffffff; /* White background for content */
+    border: 1px solid #dee2e6; /* Light border around content */
+    border-radius: 0.5rem; /* Rounded corners */
+    overflow: auto; /* Enable scrolling if content overflows */
 }
 
-/* Results Panel Styles */
-.results-panel {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-}
-
-.summary-panel {
-    background-color: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 6px;
-}
-
-.summary-panel h3 {
-    margin-top: 0;
-}
-
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.summary-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.summary-card h4 {
-    margin-top: 0;
-    color: var(--primary-color);
-}
-
-/* Chart Styles */
-.chart-container {
-    height: 400px;
-    margin: 1rem 0;
-    position: relative;
-}
-
-/* Table Styles */
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-}
-
-.data-table th {
-    text-align: left;
-    padding: 0.75rem;
-    background: #f8f9fa;
-    font-weight: 600;
-    color: var(--primary-color);
-    border-bottom: 2px solid #ddd;
-}
-
-.data-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid #eee;
-}
-
-.data-table tr:hover {
-    background: #f5f7fa;
-}
-
-/* Footer Styles */
-.footer {
-    text-align: center;
-    padding: 1.5rem;
-    background-color: var(--primary-color);
-    color: white;
-    margin-top: 2rem;
-}
-
-/* Responsive Adjustments */
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .content {
-        padding: 1rem;
+    .analyzer-panels {
+        flex-direction: column; /* Stack panels vertically on small screens */
     }
-    
-    .analyzer-container {
-        padding: 1rem;
-    }
-    
-    .summary-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .control-panel {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-.dashboard-container {
-    padding: 2rem;
-}
-
-.spot-panel {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-}
-
-.spot-price {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.analyzers-summary {
-    margin-top: 2rem;
-}
-
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.analyzer-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.analyzer-card h4 {
-    margin-top: 0;
-    color: #3498db;
-}
-
-.timestamp {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-}
-
-.no-data {
-    color: #e74c3c;
-    font-style: italic;
-}
-
-/* BS Deviation */
-.positive {
-    color: #27ae60;
-    font-weight: bold;
-}
-
-.negative {
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-/* Skew Analyzer */
-.expiry-selector {
-    margin: 1rem 0;
-}
-
-.expiry-selector select {
-    padding: 0.5rem;
-    border-radius: 4px;
-}
-
-.skew-metrics {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-}
-
-/* Macro Overlay */
-.macro-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.macro-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.macro-card h3 {
-    margin-top: 0;
-    color: #2c3e50;
-}
-
-.macro-card .value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0.5rem 0;
 }

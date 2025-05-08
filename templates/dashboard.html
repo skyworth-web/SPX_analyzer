@@ -1,0 +1,106 @@
+{% extends "base.html" %} {% block content %}
+<h1 class="text-center">Dashboard Overview</h1>
+<div class="row">
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2>Spread Analyzer</h2>
+      </div>
+      <div class="card-body">
+        <div id="spread-results" class="analyzer-content"></div>
+        <button class="btn btn-primary" onclick="fetchSpreadData()">
+          Refresh Data
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2>Black-Scholes Deviation</h2>
+      </div>
+      <div class="card-body">
+        <div id="bs-deviation-results" class="analyzer-content"></div>
+        <button class="btn btn-primary" onclick="fetchBSDeviationData()">
+          Refresh Data
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2>Skew Curve</h2>
+      </div>
+      <div class="card-body">
+        <div id="skew-results" class="analyzer-content"></div>
+        <button class="btn btn-primary" onclick="fetchSkewData()">
+          Refresh Data
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2>Macro Overlay</h2>
+      </div>
+      <div class="card-body">
+        <div id="macro-overlay-results" class="analyzer-content"></div>
+        <button class="btn btn-primary" onclick="fetchMacroOverlayData()">
+          Refresh Data
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fetchAnalyzerResults() {
+    fetchSpreadData();
+    fetchBSDeviationData();
+    fetchSkewData();
+    fetchMacroOverlayData();
+  }
+
+  function fetchSpreadData() {
+    fetch("/spread/api/results")
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("spread-results").innerHTML =
+          JSON.stringify(data);
+      });
+  }
+
+  function fetchBSDeviationData() {
+    fetch("/bs-deviation/api/results")
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("bs-deviation-results").innerHTML =
+          JSON.stringify(data);
+      });
+  }
+
+  function fetchSkewData() {
+    fetch("/skew/api/results")
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("skew-results").innerHTML =
+          JSON.stringify(data);
+      });
+  }
+
+  function fetchMacroOverlayData() {
+    fetch("/macro-overlay/api/results")
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("macro-overlay-results").innerHTML =
+          JSON.stringify(data);
+      });
+  }
+
+  fetchAnalyzerResults();
+</script>
+{% endblock %}

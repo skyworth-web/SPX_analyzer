@@ -7,16 +7,20 @@ class SpreadAnalyzer(BaseAnalyzer):
     description = "SPX Credit Spread Analyzer"
     refresh_interval = 15  # seconds
     
+    def __init__(self):
+        self.results = self._empty_summary()  # Initialize results
+
     def analyze(self, market_data):
         """Calculate spread metrics"""
         if not market_data or not market_data.get('expirations'):
-            return {
+            self.results = {
                 'timestamp': datetime.now().isoformat(),
                 'error': 'No option chain data available',
                 'put_spreads': [],
                 'call_spreads': [],
                 'summary': self._empty_summary()
             }
+            return self.results
             
         primary_expiry = market_data['primary_expiry']
         expiration_data = market_data['expirations'][primary_expiry]
@@ -24,7 +28,7 @@ class SpreadAnalyzer(BaseAnalyzer):
         put_spreads = self._calculate_spreads(expiration_data['puts'], 'put')
         call_spreads = self._calculate_spreads(expiration_data['calls'], 'call')
         
-        return {
+        self.results = {
             'timestamp': datetime.now().isoformat(),
             'spot_price': market_data['spot_price'],
             'expiry': primary_expiry.isoformat(),
@@ -32,6 +36,10 @@ class SpreadAnalyzer(BaseAnalyzer):
             'call_spreads': call_spreads,
             'summary': self._generate_summary(put_spreads, call_spreads)
         }
+        
+        return self.results
+        
+    # ... (rest of the methods remain unchanged)
         
     def _calculate_spreads(self, options, option_type):
         """Calculate spread metrics for puts or calls"""

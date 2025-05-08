@@ -1,26 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>SPX Dashboard - {% block title %}{% endblock %}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
+    <title>Trading Dashboard</title>
   </head>
   <body>
-    <nav class="main-nav">
-      <ul>
-        <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
-        {% if analyzers and 'spread' in analyzers %}
-        <li>
-          <a href="{{ url_for('spread.spread_dashboard') }}">Spread Analyzer</a>
-        </li>
-        {% endif %}
-      </ul>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Trading Dashboard</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="{{ url_for('main.dashboard') }}"
+              >Dashboard Overview</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('skew.skew_dashboard') }}"
+              >Skew Curve</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('spread.spread_dashboard') }}"
+              >Spread</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{{ url_for('macro_overlay.macro_overlay_dashboard') }}"
+              >Macro Overlay</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{{ url_for('bs_deviation.bs_deviation_dashboard') }}"
+              >BS Deviation</a
+            >
+          </li>
+        </ul>
+      </div>
     </nav>
 
-    <main>{% block content %}{% endblock %}</main>
+    <div class="container mt-4">{% block content %}{% endblock %}</div>
 
-    {% block scripts %}{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
 </html>

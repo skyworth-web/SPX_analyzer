@@ -1,32 +1,21 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 def create_blueprint():
     bp = Blueprint('main', __name__)
-    
+
     @bp.route('/')
     @bp.route('/dashboard')
     def dashboard():
-        from flask import render_template, current_app
-        from models import SPXSpot
-        from datetime import datetime
-        
-        try:
-            spot = SPXSpot.query.order_by(SPXSpot.timestamp.desc()).first()
-            return render_template('index.html',
-                                spot_price=spot.price if spot else None,
-                                analyzers=current_app.analyzers,
-                                current_app=current_app)
-        except Exception as e:
-            current_app.logger.error(f"Dashboard error: {str(e)}")
-            return render_template('index.html',
-                                error=str(e),
-                                current_app=current_app)
-    
+        return render_template('dashboard.html')
+
+    @bp.route('/analyzer-workspace')
+    def analyzer_workspace():
+        return render_template('analyzer_workspace.html')
+
     return bp
 
 def init_routes(app):
     """Initialize all routes for the application"""
-    # Register main blueprint
     app.register_blueprint(create_blueprint())
     
     # Register analyzer blueprints
