@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, current_app
 from datetime import datetime, timedelta
-from dashboards.models import SPXOptionStream
+from models import SPXOptionStream
 
 bp = Blueprint('bs_deviation', __name__)
 

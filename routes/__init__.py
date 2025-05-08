@@ -7,7 +7,7 @@ def create_blueprint():
     @bp.route('/dashboard')
     def dashboard():
         from flask import render_template, current_app
-        from dashboards.models import SPXSpot
+        from models import SPXSpot
         from datetime import datetime
         
         try:

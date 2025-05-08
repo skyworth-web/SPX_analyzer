@@ -1,4 +1,4 @@
- from dashboards.analyzers.base import BaseAnalyzer
+from analyzers.base import BaseAnalyzer
 from datetime import datetime
 import numpy as np
 from scipy.stats import linregress
