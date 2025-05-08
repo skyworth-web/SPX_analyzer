@@ -54,6 +54,8 @@ class BaseAnalyzer:
                 .order_by(SPXOptionStream.timestamp.desc())
             ).scalars().all()
 
+            # options = db.session.query(SPXOptionStream).limit(10).all()
+            
             if not options:
                 self.logger.warning(f"No options data found since {cutoff}")
                 # Return minimal data structure to prevent template errors
