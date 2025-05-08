@@ -1,0 +1,62 @@
+{% extends "base.html" %} {% block title %} Analyzer Workspace {% endblock %} {%
+block content %}
+<h2>Analyzer Workspace</h2>
+<p>Select an analyzer to proceed:</p>
+
+<div class="row">
+  <!-- Example Card for Spread Analyzer -->
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Spread Analyzer</h5>
+        <p class="card-text">Analyze various spread strategies.</p>
+        <a
+          href="{{ url_for('spread.spread_dashboard') }}"
+          class="btn btn-primary"
+          >Go to Analyzer</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Example Card for Another Analyzer -->
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Skew Analyzer</h5>
+        <p class="card-text">Explore skew analysis tools.</p>
+        <a href="{{ url_for('skew.skew_dashboard') }}" class="btn btn-primary"
+          >Go to Analyzer</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Macro Overlay Analyzer</h5>
+        <p class="card-text">Explore macro overlay analysis tools.</p>
+        <a
+          href="{{ url_for('macro_overlay.macro_overlay_dashboard') }}"
+          class="btn btn-primary"
+          >Go to Analyzer</a
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">BS Deviation Analyzer</h5>
+        <p class="card-text">Explore BS Deviation analysis tools.</p>
+        <a
+          href="{{ url_for('bs_deviation.bs_deviation_dashboard') }}"
+          class="btn btn-primary"
+          >Go to Analyzer</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

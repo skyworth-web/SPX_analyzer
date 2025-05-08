@@ -1,46 +1,67 @@
-{% extends "base.html" %} {% block title %}Spread Analyzer{% endblock %} {%
+{% extends "base.html" %} {% block title %} Spread Analyzer {% endblock %} {%
 block content %}
 <div class="analyzer-container">
   <h2>{{ analyzer.description }}</h2>
+  <p class="last-updated">Last updated: {{ results.timestamp }}</p>
 
-  {% if error %}
-  <div class="error-message">{{ error }}</div>
-  {% endif %} {% if results.error %}
-  <div class="no-data">{{ results.error }}</div>
-  {% else %}
+  <div class="control-panel">
+    <button id="refresh-btn" class="btn btn-primary">Refresh Data</button>
+    <select id="expiry-select" class="form-select">
+      <option value="0dte">0DTE</option>
+      <option value="1dte">1DTE</option>
+      <option value="weekly">Weekly</option>
+    </select>
+  </div>
+
   <div class="results-panel">
-    <p>Last updated: {{ results.timestamp }}</p>
-    <p>
-      Found {{ results.summary.put_count }} puts and {{
-      results.summary.call_count }} calls
-    </p>
+    <div class="chart-container">
+      <canvas id="spread-chart"></canvas>
+    </div>
 
-    {% if results.puts %}
-    <div class="puts-table">
-      <h3>Put Options</h3>
-      <table>
+    <div class="metrics-summary">
+      <h3>Summary Metrics</h3>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Avg Credit</span>
+          <span class="metric-value"
+            >{{ results.summary.avg_credit|round(2) }}</span
+          >
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Best R/R</span>
+          <span class="metric-value"
+            >{{ results.summary.best_risk_reward|round(2) }}</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="spreads-table">
+      <h3>Put Spreads</h3>
+      <table class="table table-bordered">
         <thead>
           <tr>
             <th>Strike</th>
-            <th>Bid</th>
-            <th>Ask</th>
-            <th>IV</th>
+            <th>Credit</th>
+            <th>Probability</th>
+            <th>Risk/Reward</th>
           </tr>
         </thead>
         <tbody>
-          {% for put in results.puts %}
+          {% for spread in results.put_spreads %}
           <tr>
-            <td>{{ put.strike }}</td>
-            <td>{{ put.bid }}</td>
-            <td>{{ put.ask }}</td>
-            <td>{{ put.iv }}</td>
+            <td>{{ spread.strike }}</td>
+            <td>{{ spread.credit }}</td>
+            <td>{{ (spread.probability * 100)|round(1) }}%</td>
+            <td>{{ spread.risk_reward|round(2) }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    {% endif %}
   </div>
-  {% endif %}
 </div>
+{% endblock %} {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/spread.js') }}"></script>
 {% endblock %}

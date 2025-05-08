@@ -1,64 +1,98 @@
-/* General Body Styles */
+/* /static/css/styles.css */
+
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa; /* Light background for better contrast */
-    color: #343a40; /* Dark text for readability */
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
 }
 
-/* Navbar Styles */
-.navbar {
-    background-color: #007bff; /* Primary color for the navbar */
+header {
+    background: #007bff;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.navbar-brand, .navbar-nav .nav-link {
-    color: black !important; /* White text for navbar items */
+header h1 {
+    margin: 0;
 }
 
-.navbar-nav .nav-link:hover {
-    color: #0c57a3 !important; /* Lighter color on hover */
+nav {
+    display: flex;
 }
 
-/* Card Styles */
-.card {
-    border: 1px solid #dee2e6; /* Light border for cards */
-    border-radius: 0.5rem; /* Rounded corners */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    transition: transform 0.2s; /* Smooth hover effect */
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    margin-left: 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
 }
 
-.card:hover {
-    transform: scale(1.02); /* Slightly enlarge card on hover */
+nav a:hover {
+    background: #0056b3;
 }
 
-/* Card Header Styles */
-.card-header {
-    background-color: #007bff; /* Primary color for card headers */
-    color: white; /* White text for card headers */
+.analyzer-container {
+    padding: 20px;
 }
 
-/* Button Styles */
+.control-panel {
+    margin-bottom: 20px;
+}
+
 .btn {
-    background-color: #28a745; /* Green button color */
-    color: white; /* White text for buttons */
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
 .btn:hover {
-    background-color: #218838; /* Darker green on hover */
+    background-color: #218838;
 }
 
-/* Analyzer Content Area */
-.analyzer-content {
-    min-height: 150px; /* Minimum height for content area */
-    padding: 1rem; /* Padding for inner content */
-    background-color: #ffffff; /* White background for content */
-    border: 1px solid #dee2e6; /* Light border around content */
-    border-radius: 0.5rem; /* Rounded corners */
-    overflow: auto; /* Enable scrolling if content overflows */
+.metrics-summary {
+    margin-top: 20px;
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .analyzer-panels {
-        flex-direction: column; /* Stack panels vertically on small screens */
-    }
+.metrics-grid {
+    display: flex;
+    gap: 20px;
+}
+
+.metric-card {
+    background: #e9ecef;
+    padding: 15px;
+    border-radius: 5px;
+    flex: 1;
+    text-align: center;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+.last-updated {
+    font-style: italic;
 }
