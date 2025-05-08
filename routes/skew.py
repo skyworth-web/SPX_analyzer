@@ -10,7 +10,7 @@ def skew_dashboard():
         
     results = analyzer.get_latest_results()
     
-    return render_template('analyzers/skew.html',
+    return render_template('analyzers/skew_curve.html',
                          analyzer=analyzer,
                          results=results,
                          current_app=current_app)
