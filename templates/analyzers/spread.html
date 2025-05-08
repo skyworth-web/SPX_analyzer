@@ -1,11 +1,11 @@
-{% extends "base.html" %} {% block title %}Spread Analyzer{% endblock %} {%
+{% extends "base.html" %} {% block title %} Spread Analyzer {% endblock %} {%
 block content %}
 <div class="analyzer-container">
   <h2>{{ analyzer.description }}</h2>
   <p class="last-updated">Last updated: {{ results.timestamp }}</p>
 
   <div class="control-panel">
-    <button id="refresh-btn" class="btn">Refresh Data</button>
+    <button id="refresh-btn" class="btn btn-primary">Refresh Data</button>
     <select id="expiry-select" class="form-select">
       <option value="0dte">0DTE</option>
       <option value="1dte">1DTE</option>
@@ -38,7 +38,7 @@ block content %}
 
     <div class="spreads-table">
       <h3>Put Spreads</h3>
-      <table class="data-table">
+      <table class="table table-bordered">
         <thead>
           <tr>
             <th>Strike</th>
