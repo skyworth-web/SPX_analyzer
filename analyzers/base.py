@@ -13,16 +13,16 @@ class BaseAnalyzer:
         self.logger = logging.getLogger(f"analyzer.{self.name}")
         self.spot_price = None
         
-    def analyze(self, market_data):
-        """To be implemented by each analyzer"""
-        raise NotImplementedError
+    # def analyze(self, market_data):
+    #     """To be implemented by each analyzer"""
+    #     raise NotImplementedError
         
     def get_latest_results(self):
         """Get cached results or fetch new ones"""
         if not self.last_results or self._needs_refresh():
             market_data = self._fetch_market_data()
             if market_data:
-                return self.analyze(market_data)
+                return market_data
         return self.last_results or {
             'timestamp': datetime.now().isoformat(),
             'spot_price': None,
