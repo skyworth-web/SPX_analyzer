@@ -289,6 +289,7 @@ class IroncondorAnalyzer(BaseAnalyzer):
 if __name__ == "__main__":
     iron_condor_analyzer = IroncondorAnalyzer()
     initial_data = iron_condor_analyzer._fetch_market_data()  # Use the inherited method
+    print("==============", initial_data)
     if initial_data:
         iron_condor_analyzer.process_data_callback(initial_data)
         logger.info("Initial data processed successfully")

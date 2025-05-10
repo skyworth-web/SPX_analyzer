@@ -40,12 +40,12 @@
 
     <script>
       async function loadDashboard() {
-        const status = await fetch("/api/status").then((r) => r.json());
+        const status = await fetch("/iron-condor/status").then((r) => r.json());
         document.getElementById(
           "status"
         ).textContent = `SPX: ${status.spx_price} | Last Updated: ${status.last_analysis}`;
 
-        const data = await fetch("/api/analysis").then((r) => r.json());
+        const data = await fetch("/iron-condor/analysis").then((r) => r.json());
         const tbody = document.querySelector("#opportunities tbody");
         tbody.innerHTML = data.scored_trades
           .map(
@@ -91,12 +91,12 @@
       }
 
       async function analyze() {
-        await fetch("/api/analyze", { method: "POST" });
+        await fetch("/iron-condor/analyze", { method: "POST" });
         loadDashboard();
       }
 
       async function addPosition(trade) {
-        await fetch("/api/position", {
+        await fetch("/iron-condor/position", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(trade),
@@ -105,7 +105,7 @@
       }
 
       async function closePosition(id) {
-        await fetch(`/api/position/${id}/close`, { method: "POST" });
+        await fetch(`/iron-condor/position/${id}/close`, { method: "POST" });
         loadDashboard();
       }
 
