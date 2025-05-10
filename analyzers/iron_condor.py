@@ -49,7 +49,12 @@ class IroncondorAnalyzer(BaseAnalyzer):
                 'adjustments': []
             }
         }
-
+        initial_data = self.get_latest_results()  # Use the inherited method
+        if initial_data:
+            self.process_data_callback(initial_data)
+            logger.info("Initial data processed successfully")
+        else:
+            logger.warning("No initial data available")
     def calculate_trade_score(self, trade):
         """
         Calculate a comprehensive score for a potential iron condor trade.
@@ -213,7 +218,7 @@ class IroncondorAnalyzer(BaseAnalyzer):
         Returns the current analysis after processing.
         """
         logger.info("Manually triggering market analysis...")
-        data = self._fetch_market_data()  # Use the inherited method
+        data = self.get_latest_results()  # Use the inherited method
         self.process_data_callback(data)
         return self.current_analysis
 
@@ -288,7 +293,7 @@ class IroncondorAnalyzer(BaseAnalyzer):
 # Example usage
 if __name__ == "__main__":
     iron_condor_analyzer = IroncondorAnalyzer()
-    initial_data = iron_condor_analyzer._fetch_market_data()  # Use the inherited method
+    initial_data = iron_condor_analyzer.get_latest_results()  # Use the inherited method
     print("==============", initial_data)
     if initial_data:
         iron_condor_analyzer.process_data_callback(initial_data)

@@ -50,7 +50,7 @@ class BaseAnalyzer:
             
             options = db.session.execute(
                 db.select(SPXOptionStream)
-                .where(SPXOptionStream.timestamp >= cutoff)
+                # .where(SPXOptionStream.timestamp >= cutoff)
                 .order_by(SPXOptionStream.timestamp.desc())
             ).scalars().all()
 
@@ -68,12 +68,13 @@ class BaseAnalyzer:
                 }
                 
             # Organize data by expiration and strike
-            organized_data = {}
+            calls = []
+            puts = []
             for opt in options:
                 # if opt.exp_date not in organized_data:
                 #     organized_data = {'calls': [], 'puts': []}
-                
-                organized_data['calls'].append({
+            
+                calls.append({
                     'strike': opt.strike_price,
                     'bid': opt.call_bid,
                     'ask': opt.call_ask,
@@ -90,7 +91,7 @@ class BaseAnalyzer:
                     'type': 'C'
                 })
                 
-                organized_data['puts'].append({
+                puts.append({
                     'strike': opt.strike_price,
                     'bid': opt.put_bid,
                     'ask': opt.put_ask,
@@ -107,11 +108,12 @@ class BaseAnalyzer:
                     'type': 'P'
                 })
             
+            
             return {
                 'timestamp': datetime.now().isoformat(),
                 'spx_price': self.spot_price,
-                'calls': organized_data['calls'],
-                'puts': organized_data['puts']
+                'calls': calls,
+                'puts': puts
                 #'primary_expiry': min(organized_data.keys()) if organized_data else None
             }
         except Exception as e:
