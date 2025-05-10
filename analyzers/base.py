@@ -13,16 +13,16 @@ class BaseAnalyzer:
         self.logger = logging.getLogger(f"analyzer.{self.name}")
         self.spot_price = None
         
-    def analyze(self, market_data):
-        """To be implemented by each analyzer"""
-        raise NotImplementedError
+    # def analyze(self, market_data):
+    #     """To be implemented by each analyzer"""
+    #     raise NotImplementedError
         
     def get_latest_results(self):
         """Get cached results or fetch new ones"""
         if not self.last_results or self._needs_refresh():
             market_data = self._fetch_market_data()
             if market_data:
-                return self.analyze(market_data)
+                return market_data
         return self.last_results or {
             'timestamp': datetime.now().isoformat(),
             'spot_price': None,
@@ -39,21 +39,23 @@ class BaseAnalyzer:
         try:
             # Get current spot price
             spot = db.session.execute(
-                db.select(SPXSpot)
-                .order_by(SPXSpot.timestamp.desc())
+                db.select(SPXOptionStream)
+                .order_by(SPXOptionStream.timestamp.desc())
                 .limit(1)
             ).scalar()
-            self.spot_price = spot.price if spot else None
+            self.spot_price = spot.strike_price if spot else None
 
             # Get options data from last 5 minutes (increased from 2)
             cutoff = datetime.now() - timedelta(minutes=5)
             
             options = db.session.execute(
                 db.select(SPXOptionStream)
-                .where(SPXOptionStream.timestamp >= cutoff)
+                # .where(SPXOptionStream.timestamp >= cutoff)
                 .order_by(SPXOptionStream.timestamp.desc())
             ).scalars().all()
 
+            # options = db.session.query(SPXOptionStream).limit(10).all()
+            
             if not options:
                 self.logger.warning(f"No options data found since {cutoff}")
                 # Return minimal data structure to prevent template errors
@@ -66,46 +68,53 @@ class BaseAnalyzer:
                 }
                 
             # Organize data by expiration and strike
-            organized_data = {}
+            calls = []
+            puts = []
             for opt in options:
-                if opt.exp_date not in organized_data:
-                    organized_data[opt.exp_date] = {'calls': [], 'puts': []}
-                
-                organized_data[opt.exp_date]['calls'].append({
+                # if opt.exp_date not in organized_data:
+                #     organized_data = {'calls': [], 'puts': []}
+            
+                calls.append({
                     'strike': opt.strike_price,
                     'bid': opt.call_bid,
                     'ask': opt.call_ask,
                     'last': opt.call_last,
-                    'iv': opt.call_iv,
+                    'volatility': opt.call_iv,
                     'delta': opt.call_delta,
                     'gamma': opt.call_gamma,
                     'theta': opt.call_theta,
                     'vega': opt.call_vega,
-                    'open_interest': opt.call_open_int,
+                    'openInterest': opt.call_open_int,
                     'net_change': opt.call_net_chg,
-                    'timestamp': opt.timestamp.isoformat()
+                    'timestamp': opt.timestamp.isoformat(),
+                    'daysToExpiration': 0,
+                    'type': 'C'
                 })
                 
-                organized_data[opt.exp_date]['puts'].append({
+                puts.append({
                     'strike': opt.strike_price,
                     'bid': opt.put_bid,
                     'ask': opt.put_ask,
                     'last': opt.put_last,
-                    'iv': opt.put_iv,
+                    'volatility': opt.put_iv,
                     'delta': opt.put_delta,
                     'gamma': opt.put_gamma,
                     'theta': opt.put_theta,
                     'vega': opt.put_vega,
-                    'open_interest': opt.put_open_int,
+                    'openInterest': opt.put_open_int,
                     'net_change': opt.put_net_chg,
-                    'timestamp': opt.timestamp.isoformat()
+                    'timestamp': opt.timestamp.isoformat(),
+                    'daysToExpiration': 0,
+                    'type': 'P'
                 })
+            
             
             return {
                 'timestamp': datetime.now().isoformat(),
-                'spot_price': self.spot_price,
-                'expirations': organized_data,
-                'primary_expiry': min(organized_data.keys()) if organized_data else None
+                'spx_price': self.spot_price,
+                'calls': calls,
+                'puts': puts
+                #'primary_expiry': min(organized_data.keys()) if organized_data else None
             }
         except Exception as e:
             self.logger.error(f"Failed to fetch market data: {str(e)}")

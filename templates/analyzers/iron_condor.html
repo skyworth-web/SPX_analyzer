@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SPX 0DTE Iron Condor Analyzer</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light p-4">
+    <div class="container">
+      <h2>SPX 0DTE Iron Condor Analyzer</h2>
+      <div id="status" class="mb-3 text-muted">Loading...</div>
+      <button class="btn btn-primary mb-3" onclick="analyze()">
+        🔍 Analyze Market
+      </button>
+
+      <h4>Top Opportunities</h4>
+      <table
+        class="table table-striped table-bordered table-sm"
+        id="opportunities"
+      >
+        <thead>
+          <tr>
+            <th>Score</th>
+            <th>Strikes</th>
+            <th>Premium</th>
+            <th>Risk</th>
+            <th>Δ</th>
+            <th>IV</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h4>Open Positions</h4>
+      <ul class="list-group" id="positions"></ul>
+    </div>
+
+    <script>
+      async function loadDashboard() {
+        const status = await fetch("/iron-condor/status").then((r) => r.json());
+        document.getElementById(
+          "status"
+        ).textContent = `SPX: ${status.spx_price} | Last Updated: ${status.last_analysis}`;
+
+        const data = await fetch("/iron-condor/analysis").then((r) => r.json());
+        const tbody = document.querySelector("#opportunities tbody");
+        tbody.innerHTML = data.scored_trades
+          .map(
+            (t) => `
+                <tr>
+                    <td>${t.score}</td>
+                    <td>${t.short_put}/${t.long_put} - ${t.short_call}/${
+              t.long_call
+            }</td>
+                    <td>${t.premium}</td>
+                    <td>${t.max_loss}</td>
+                    <td>${Math.abs(
+                      t.short_call_delta - t.short_put_delta
+                    ).toFixed(2)}</td>
+                    <td>${((t.call_iv + t.put_iv) / 2).toFixed(1)}%</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" onclick='addPosition(${JSON.stringify(
+                          t
+                        )})'>Open</button>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+
+        const positions = document.getElementById("positions");
+        positions.innerHTML = data.current_positions
+          .map(
+            (p) => `
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>${p.short_put}/${p.long_put} - ${p.short_call}/${
+              p.long_call
+            } (${p.timestamp})</span>
+                    ${
+                      p.closed
+                        ? '<span class="badge bg-secondary">Closed</span>'
+                        : `<button class="btn btn-sm btn-danger" onclick="closePosition('${p.id}')">Close</button>`
+                    }
+                </li>
+            `
+          )
+          .join("");
+      }
+
+      async function analyze() {
+        await fetch("/iron-condor/analyze", { method: "POST" });
+        loadDashboard();
+      }
+
+      async function addPosition(trade) {
+        await fetch("/iron-condor/position", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(trade),
+        });
+        loadDashboard();
+      }
+
+      async function closePosition(id) {
+        await fetch(`/iron-condor/position/${id}/close`, { method: "POST" });
+        loadDashboard();
+      }
+
+      loadDashboard();
+      setInterval(loadDashboard, 15000); // Refresh every 15 sec
+    </script>
+  </body>
+</html>

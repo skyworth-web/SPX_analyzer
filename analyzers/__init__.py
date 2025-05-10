@@ -3,6 +3,7 @@ from .spread import SpreadAnalyzer
 from .bs_deviation import BSDeviationAnalyzer
 from .skew import SkewAnalyzer
 from .macro_overlay import MacroOverlayAnalyzer
+from .iron_condor import IroncondorAnalyzer
 
 def init_analyzers(app):
     """Initialize all analyzers and register with Flask app"""
@@ -10,7 +11,8 @@ def init_analyzers(app):
         'spread': SpreadAnalyzer(),
         'bs_deviation': BSDeviationAnalyzer(),
         'skew': SkewAnalyzer(),
-        'macro_overlay': MacroOverlayAnalyzer()
+        'macro_overlay': MacroOverlayAnalyzer(),
+        'iron_condor': IroncondorAnalyzer()
     }
     
     # Initialize each analyzer
