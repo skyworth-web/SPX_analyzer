@@ -1,75 +1,265 @@
-{% extends "base.html" %} {% block title %} Analyzer Workspace {% endblock %} {%
+{% extends "base.html" %} {% block title %}Analyzer Workspace{% endblock %} {%
 block content %}
-<h2>Analyzer Workspace</h2>
-<p>Select an analyzer to proceed:</p>
+<div class="container-fluid analyzer-dashboard">
+  <!-- Dashboard Header with Search and Filters -->
+  <div class="dashboard-header">
+    <h2><i class="fas fa-chart-pie"></i> Analyzer Workspace</h2>
+    <div class="controls">
+      <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          id="analyzerSearch"
+          placeholder="Search analyzers..."
+        />
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-btn active" data-filter="all">
+          All Analyzers
+        </button>
+        <button class="filter-btn" data-filter="strategy">Strategies</button>
+        <button class="filter-btn" data-filter="risk">Risk Tools</button>
+        <button class="filter-btn" data-filter="market">Market Views</button>
+      </div>
+    </div>
+  </div>
 
-<div class="row">
-  <!-- Example Card for Spread Analyzer -->
-  <div class="col-md-4">
-    <div class="card mb-4">
+  <!-- Analyzer Grid -->
+  <div class="analyzer-grid">
+    <!-- Spread Analyzer Card -->
+    <div class="analyzer-card strategy" data-features="condor,butterfly,ratio">
+      <div class="card-header">
+        <div class="card-icon blue">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="card-title">
+          <h3>Spread Analyzer</h3>
+          <span class="badge strategy-badge">Strategy</span>
+        </div>
+        <button class="star-btn" aria-label="Favorite">
+          <i class="far fa-star"></i>
+        </button>
+      </div>
       <div class="card-body">
-        <h5 class="card-title">Spread Analyzer</h5>
-        <p class="card-text">Analyze various spread strategies.</p>
+        <p>
+          Analyze iron condors, butterflies, and ratio spreads with probability
+          curves.
+        </p>
+        <div class="live-data">
+          <span><i class="fas fa-bolt"></i> SPX Condor Width: 0.65</span>
+          <span><i class="fas fa-percentage"></i> IV Rank: 18%</span>
+        </div>
+      </div>
+      <div class="card-footer">
         <a
           href="{{ url_for('spread.spread_dashboard') }}"
           class="btn btn-primary"
-          >Go to Analyzer</a
         >
+          Launch <i class="fas fa-arrow-right"></i>
+        </a>
+        <button class="settings-btn" aria-label="Settings">
+          <i class="fas fa-cog"></i>
+        </button>
       </div>
     </div>
-  </div>
 
-  <!-- Example Card for Another Analyzer -->
-  <div class="col-md-4">
-    <div class="card mb-4">
+    <!-- Skew Analyzer Card -->
+    <div class="analyzer-card risk" data-features="skew,smile,term">
+      <div class="card-header">
+        <div class="card-icon yellow">
+          <i class="fas fa-chart-area"></i>
+        </div>
+        <div class="card-title">
+          <h3>Skew Analyzer</h3>
+          <span class="badge risk-badge">Risk</span>
+        </div>
+        <button class="star-btn starred" aria-label="Favorite">
+          <i class="fas fa-star"></i>
+        </button>
+      </div>
       <div class="card-body">
-        <h5 class="card-title">Skew Analyzer</h5>
-        <p class="card-text">Explore skew analysis tools.</p>
-        <a href="{{ url_for('skew.skew_dashboard') }}" class="btn btn-primary"
-          >Go to Analyzer</a
-        >
+        <p>
+          Visualize volatility skew and term structure across multiple
+          expirations.
+        </p>
+        <div class="live-data">
+          <span><i class="fas fa-exchange-alt"></i> SKEW Index: 142.5</span>
+          <span><i class="fas fa-calendar-alt"></i> DTE: 7/21/35</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="{{ url_for('skew.skew_dashboard') }}" class="btn btn-primary">
+          Launch <i class="fas fa-arrow-right"></i>
+        </a>
+        <button class="settings-btn" aria-label="Settings">
+          <i class="fas fa-cog"></i>
+        </button>
       </div>
     </div>
-  </div>
-
-  <div class="col-md-4">
-    <div class="card mb-4">
-      <div class="card-body">
-        <h5 class="card-title">Macro Overlay Analyzer</h5>
-        <p class="card-text">Explore macro overlay analysis tools.</p>
-        <a
-          href="{{ url_for('macro_overlay.macro_overlay_dashboard') }}"
-          class="btn btn-primary"
-          >Go to Analyzer</a
-        >
+    <!-- Iron Condor Analyzer Card -->
+    <div class="analyzer-card risk" data-features="skew,smile,term">
+      <div class="card-header">
+        <div class="card-icon purple">
+          <i class="fas fa-chart-area"></i>
+        </div>
+        <div class="card-title">
+          <h3>Iron Condor Analyzer</h3>
+          <span class="badge risk-badge">Risk</span>
+        </div>
+        <button class="star-btn starred" aria-label="Favorite">
+          <i class="fas fa-star"></i>
+        </button>
       </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card mb-4">
       <div class="card-body">
-        <h5 class="card-title">BS Deviation Analyzer</h5>
-        <p class="card-text">Explore BS Deviation analysis tools.</p>
-        <a
-          href="{{ url_for('bs_deviation.bs_deviation_dashboard') }}"
-          class="btn btn-primary"
-          >Go to Analyzer</a
-        >
+        <p>
+          Visualize volatility skew and term structure across multiple
+          expirations.
+        </p>
+        <div class="live-data">
+          <span><i class="fas fa-exchange-alt"></i> SKEW Index: 142.5</span>
+          <span><i class="fas fa-calendar-alt"></i> DTE: 7/21/35</span>
+        </div>
       </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card mb-4">
-      <div class="card-body">
-        <h5 class="card-title">Iron Condor Analyzer</h5>
-        <p class="card-text">Explore Iron Condor analysis tools.</p>
+      <div class="card-footer">
         <a
           href="{{ url_for('iron_condor.iron_condor_dashboard') }}"
           class="btn btn-primary"
-          >Go to Analyzer</a
         >
+          Launch <i class="fas fa-arrow-right"></i>
+        </a>
+        <button class="settings-btn" aria-label="Settings">
+          <i class="fas fa-cog"></i>
+        </button>
       </div>
     </div>
+    <!-- BS Deviation Analyzer Card -->
+    <div class="analyzer-card risk" data-features="skew,smile,term">
+      <div class="card-header">
+        <div class="card-icon yellow">
+          <i class="fas fa-chart-area"></i>
+        </div>
+        <div class="card-title">
+          <h3>BS Deviation Analyzer</h3>
+          <span class="badge risk-badge">Risk</span>
+        </div>
+        <button class="star-btn starred" aria-label="Favorite">
+          <i class="fas fa-star"></i>
+        </button>
+      </div>
+      <div class="card-body">
+        <p>
+          Visualize volatility skew and term structure across multiple
+          expirations.
+        </p>
+        <div class="live-data">
+          <span><i class="fas fa-exchange-alt"></i> SKEW Index: 142.5</span>
+          <span><i class="fas fa-calendar-alt"></i> DTE: 7/21/35</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a
+          href="{{ url_for('bs_deviation.bs_deviation_dashboard') }}"
+          class="btn btn-primary"
+        >
+          Launch <i class="fas fa-arrow-right"></i>
+        </a>
+        <button class="settings-btn" aria-label="Settings">
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Macro Overlay Analyzer Card -->
+    <div class="analyzer-card risk" data-features="skew,smile,term">
+      <div class="card-header">
+        <div class="card-icon yellow">
+          <i class="fa fa-globe" aria-hidden="true"></i>
+        </div>
+        <div class="card-title">
+          <h3>Macro Overlay Analyzer</h3>
+          <span class="badge risk-badge">Risk</span>
+        </div>
+        <button class="star-btn starred" aria-label="Favorite">
+          <i class="fas fa-star"></i>
+        </button>
+      </div>
+      <div class="card-body">
+        <p>
+          Visualize volatility skew and term structure across multiple
+          expirations.
+        </p>
+        <div class="live-data">
+          <span><i class="fas fa-exchange-alt"></i> SKEW Index: 142.5</span>
+          <span><i class="fas fa-calendar-alt"></i> DTE: 7/21/35</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a
+          href="{{ url_for('macro_overlay.macro_overlay_dashboard') }}"
+          class="btn btn-primary"
+        >
+          Launch <i class="fas fa-arrow-right"></i>
+        </a>
+        <button class="settings-btn" aria-label="Settings">
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Additional analyzer cards would follow same pattern -->
   </div>
 </div>
+
+<!-- Tooltip Template -->
+<div class="tooltip" id="featureTooltip"></div>
+
+<script>
+  // Interactive Features
+  document.addEventListener("DOMContentLoaded", function () {
+    // Search functionality
+    document
+      .getElementById("analyzerSearch")
+      .addEventListener("input", function (e) {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll(".analyzer-card").forEach((card) => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = text.includes(term) ? "flex" : "none";
+        });
+      });
+
+    // Filter tabs
+    document.querySelectorAll(".filter-btn").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        this.classList.add("active");
+
+        const filter = this.dataset.filter;
+        document.querySelectorAll(".analyzer-card").forEach((card) => {
+          card.style.display =
+            filter === "all" || card.classList.contains(filter)
+              ? "flex"
+              : "none";
+        });
+      });
+    });
+
+    // Tooltip system
+    const tooltip = document.getElementById("featureTooltip");
+    document.querySelectorAll("[data-features]").forEach((card) => {
+      card.addEventListener("mouseenter", function (e) {
+        const features = this.dataset.features.split(",");
+        tooltip.innerHTML = `<strong>Features:</strong><ul>${features
+          .map((f) => `<li>${f.replace(/\b\w/g, (l) => l.toUpperCase())}</li>`)
+          .join("")}</ul>`;
+        tooltip.style.left = `${e.pageX + 15}px`;
+        tooltip.style.top = `${e.pageY}px`;
+        tooltip.style.visibility = "visible";
+      });
+
+      card.addEventListener("mouseleave", () => {
+        tooltip.style.visibility = "hidden";
+      });
+    });
+  });
+</script>
 {% endblock %}
