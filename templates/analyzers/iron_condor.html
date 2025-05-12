@@ -1,337 +1,330 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>SPX 0DTE Iron Condor Analyzer</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --primary-color: #4361ee;
-        --secondary-color: #3f37c9;
-        --success-color: #4cc9f0;
-        --danger-color: #f72585;
-        --warning-color: #f8961e;
-        --dark-color: #212529;
-        --light-color: #f8f9fa;
-      }
+{% extends "base.html" %} {% block title %}SPX 0DTE Iron Condor Analyzer{%
+endblock %} {% block content %}
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --success-color: #4cc9f0;
+    --danger-color: #f72585;
+    --warning-color: #f8961e;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+  }
 
-      body {
-        background-color: #f5f7fa;
-        font-family: "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      }
+  body {
+    background-color: #f5f7fa;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  }
 
-      .dashboard-container {
-        max-width: 1400px;
-        margin: 2rem auto;
-        padding: 2rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      }
+  .dashboard-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
 
-      .header-card {
-        background: linear-gradient(
-          135deg,
-          var(--primary-color),
-          var(--secondary-color)
-        );
-        color: white;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
-      }
+  .header-card {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--secondary-color)
+    );
+    color: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+  }
 
-      .status-indicator {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 1.1rem;
-      }
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+  }
 
-      .status-badge {
-        background-color: rgba(255, 255, 255, 0.2);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: 500;
-      }
+  .status-badge {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+  }
 
-      .analyze-btn {
-        background-color: white;
-        color: var(--primary-color);
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+  .analyze-btn {
+    background-color: white;
+    color: var(--primary-color);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
-      .analyze-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-      }
+  .analyze-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
 
-      .section-title {
-        color: var(--dark-color);
-        margin: 1.5rem 0;
-        font-weight: 600;
-        border-left: 4px solid var(--primary-color);
-        padding-left: 0.75rem;
-      }
+  .section-title {
+    color: var(--dark-color);
+    margin: 1.5rem 0;
+    font-weight: 600;
+    border-left: 4px solid var(--primary-color);
+    padding-left: 0.75rem;
+  }
 
-      .opportunities-table {
-        background-color: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
+  .opportunities-table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
 
-      .opportunities-table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-        color: #495057;
-        padding: 1rem;
-      }
+  .opportunities-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    padding: 1rem;
+  }
 
-      .opportunities-table td {
-        padding: 0.75rem 1rem;
-        vertical-align: middle;
-      }
+  .opportunities-table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+  }
 
-      .score-cell {
-        font-weight: 600;
-        text-align: center;
-      }
+  .score-cell {
+    font-weight: 600;
+    text-align: center;
+  }
 
-      .score-high {
-        color: #2a9d8f;
-      }
+  .score-high {
+    color: #2a9d8f;
+  }
 
-      .score-medium {
-        color: #e9c46a;
-      }
+  .score-medium {
+    color: #e9c46a;
+  }
 
-      .score-low {
-        color: #e76f51;
-      }
+  .score-low {
+    color: #e76f51;
+  }
 
-      .strikes-cell {
-        font-family: "Courier New", monospace;
-        font-weight: 600;
-      }
+  .strikes-cell {
+    font-family: "Courier New", monospace;
+    font-weight: 600;
+  }
 
-      .action-btn {
-        border-radius: 6px;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        border: none;
-      }
+  .action-btn {
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+  }
 
-      .action-btn:hover {
-        transform: translateY(-1px);
-      }
+  .action-btn:hover {
+    transform: translateY(-1px);
+  }
 
-      .positions-list {
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
+  .positions-list {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
 
-      .position-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid #e9ecef;
-        transition: background-color 0.2s ease;
-      }
+  .position-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
+  }
 
-      .position-item:hover {
-        background-color: #f8f9fa;
-      }
+  .position-item:hover {
+    background-color: #f8f9fa;
+  }
 
-      .position-strikes {
-        font-family: "Courier New", monospace;
-        font-weight: 600;
-      }
+  .position-strikes {
+    font-family: "Courier New", monospace;
+    font-weight: 600;
+  }
 
-      .position-time {
-        font-size: 0.85rem;
-        color: #6c757d;
-      }
+  .position-time {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
 
-      .refresh-indicator {
-        font-size: 0.9rem;
-        color: #6c757d;
-        text-align: right;
-        margin-top: 1rem;
-      }
+  .refresh-indicator {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: right;
+    margin-top: 1rem;
+  }
 
-      .badge-closed {
-        background-color: #6c757d;
-      }
+  .badge-closed {
+    background-color: #6c757d;
+  }
 
-      .badge-open {
-        background-color: var(--success-color);
-      }
+  .badge-open {
+    background-color: var(--success-color);
+  }
 
-      .greek-value {
-        font-family: "Courier New", monospace;
-        font-weight: 600;
-      }
+  .greek-value {
+    font-family: "Courier New", monospace;
+    font-weight: 600;
+  }
 
-      .delta-positive {
-        color: #2a9d8f;
-      }
+  .delta-positive {
+    color: #2a9d8f;
+  }
 
-      .delta-negative {
-        color: #e76f51;
-      }
+  .delta-negative {
+    color: #e76f51;
+  }
 
-      .iv-value {
-        font-weight: 600;
-      }
+  .iv-value {
+    font-weight: 600;
+  }
 
-      .iv-high {
-        color: #e76f51;
-      }
+  .iv-high {
+    color: #e76f51;
+  }
 
-      .iv-medium {
-        color: #e9c46a;
-      }
+  .iv-medium {
+    color: #e9c46a;
+  }
 
-      .iv-low {
-        color: #2a9d8f;
-      }
+  .iv-low {
+    color: #2a9d8f;
+  }
 
-      @media (max-width: 768px) {
-        .dashboard-container {
-          padding: 1rem;
-        }
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
 
-        .header-card {
-          padding: 1rem;
-        }
+    .header-card {
+      padding: 1rem;
+    }
 
-        .status-indicator {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="dashboard-container">
-      <div class="header-card">
-        <div
-          class="d-flex justify-content-between align-items-center flex-wrap"
-        >
-          <div>
-            <h1>
-              <i class="fas fa-chess-knight me-2"></i>SPX 0DTE Iron Condor
-              Analyzer
-            </h1>
-            <div class="status-indicator mt-2">
-              <span id="status" class="status-badge">
-                <i class="fas fa-circle-notch fa-spin me-2"></i>Loading market
-                data...
-              </span>
-              <span id="refresh-time" class="status-badge">
-                <i class="fas fa-clock me-2"></i>Last refresh: --
-              </span>
-            </div>
-          </div>
-          <button class="analyze-btn mt-2 mt-md-0" onclick="analyze()">
-            <i class="fas fa-search me-2"></i>Analyze Market
-          </button>
+    .status-indicator {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+<div class="dashboard-container">
+  <div class="header-card">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+      <div>
+        <h1>
+          <i class="fas fa-chess-knight me-2"></i>SPX 0DTE Iron Condor Analyzer
+        </h1>
+        <div class="status-indicator mt-2">
+          <span id="status" class="status-badge">
+            <i class="fas fa-circle-notch fa-spin me-2"></i>Loading market
+            data...
+          </span>
+          <span id="refresh-time" class="status-badge">
+            <i class="fas fa-clock me-2"></i>Last refresh: --
+          </span>
         </div>
       </div>
-
-      <h3 class="section-title">
-        <i class="fas fa-bolt me-2"></i>Top Opportunities
-      </h3>
-      <div class="table-responsive opportunities-table">
-        <table class="table table-hover" id="opportunities">
-          <thead>
-            <tr>
-              <th>Score</th>
-              <th>Strikes</th>
-              <th>Premium</th>
-              <th>Risk</th>
-              <th>Δ Balance</th>
-              <th>Avg IV</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <h3 class="section-title">
-        <i class="fas fa-list-ul me-2"></i>Open Positions
-      </h3>
-      <div class="positions-list">
-        <ul class="list-group" id="positions"></ul>
-      </div>
-
-      <div class="refresh-indicator">
-        <i class="fas fa-sync-alt me-2"></i>Auto-refreshing every 15 seconds
-      </div>
+      <button class="analyze-btn mt-2 mt-md-0" onclick="analyze()">
+        <i class="fas fa-search me-2"></i>Analyze Market
+      </button>
     </div>
+  </div>
 
-    <script>
-      // Format timestamp
-      function formatTime(timestamp) {
-        const options = {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        };
-        return new Date(timestamp).toLocaleTimeString("en-US", options);
-      }
+  <h3 class="section-title">
+    <i class="fas fa-bolt me-2"></i>Top Opportunities
+  </h3>
+  <div class="table-responsive opportunities-table">
+    <table class="table table-hover" id="opportunities">
+      <thead>
+        <tr>
+          <th>Score</th>
+          <th>Strikes</th>
+          <th>Premium</th>
+          <th>Risk</th>
+          <th>Δ Balance</th>
+          <th>Avg IV</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-      // Get score class based on value
-      function getScoreClass(score) {
-        if (score >= 80) return "score-high";
-        if (score >= 50) return "score-medium";
-        return "score-low";
-      }
+  <h3 class="section-title">
+    <i class="fas fa-list-ul me-2"></i>Open Positions
+  </h3>
+  <div class="positions-list">
+    <ul class="list-group" id="positions"></ul>
+  </div>
 
-      // Get IV class based on value
-      function getIvClass(iv) {
-        if (iv >= 30) return "iv-high";
-        if (iv >= 20) return "iv-medium";
-        return "iv-low";
-      }
+  <div class="refresh-indicator">
+    <i class="fas fa-sync-alt me-2"></i>Auto-refreshing every 15 seconds
+  </div>
+</div>
 
-      // Format currency
-      function formatCurrency(value) {
-        return "$" + parseFloat(value).toFixed(2);
-      }
+<script>
+  // Format timestamp
+  function formatTime(timestamp) {
+    const options = {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    };
+    return new Date(timestamp).toLocaleTimeString("en-US", options);
+  }
 
-      // Format delta balance
-      function formatDeltaBalance(callDelta, putDelta) {
-        const balance = Math.abs(callDelta - putDelta).toFixed(2);
-        return `<span class="greek-value ${
-          balance > 0.15 ? "delta-positive" : "delta-negative"
-        }">${balance}</span>`;
-      }
+  // Get score class based on value
+  function getScoreClass(score) {
+    if (score >= 80) return "score-high";
+    if (score >= 50) return "score-medium";
+    return "score-low";
+  }
 
-      async function loadDashboard() {
-        try {
-          const statusResponse = await fetch("/iron-condor/status");
-          const status = await statusResponse.json();
+  // Get IV class based on value
+  function getIvClass(iv) {
+    if (iv >= 30) return "iv-high";
+    if (iv >= 20) return "iv-medium";
+    return "iv-low";
+  }
 
-          document.getElementById("status").innerHTML = `
+  // Format currency
+  function formatCurrency(value) {
+    return "$" + parseFloat(value).toFixed(2);
+  }
+
+  // Format delta balance
+  function formatDeltaBalance(callDelta, putDelta) {
+    const balance = Math.abs(callDelta - putDelta).toFixed(2);
+    return `<span class="greek-value ${
+      balance > 0.15 ? "delta-positive" : "delta-negative"
+    }">${balance}</span>`;
+  }
+
+  async function loadDashboard() {
+    try {
+      const statusResponse = await fetch("/iron-condor/status");
+      const status = await statusResponse.json();
+
+      document.getElementById("status").innerHTML = `
                     <i class="fas fa-chart-line me-2"></i>SPX: <strong>${status.spx_price.toFixed(
                       2
                     )}</strong> 
@@ -340,27 +333,27 @@
                     )}</strong>
                 `;
 
-          document.getElementById("refresh-time").innerHTML = `
+      document.getElementById("refresh-time").innerHTML = `
                     <i class="fas fa-clock me-2"></i>Updated: <strong>${formatTime(
                       Date.now()
                     )}</strong>
                 `;
 
-          const dataResponse = await fetch("/iron-condor/analysis");
-          const data = await dataResponse.json();
+      const dataResponse = await fetch("/iron-condor/analysis");
+      const data = await dataResponse.json();
 
-          const tbody = document.querySelector("#opportunities tbody");
-          tbody.innerHTML = data.scored_trades
-            .map(
-              (trade) => `
+      const tbody = document.querySelector("#opportunities tbody");
+      tbody.innerHTML = data.scored_trades
+        .map(
+          (trade) => `
                     <tr>
                         <td class="score-cell ${getScoreClass(trade.score)}">
                             ${trade.score.toFixed(1)}
                         </td>
                         <td class="strikes-cell">
                             ${trade.short_put}/${trade.long_put} - ${
-                trade.short_call
-              }/${trade.long_call}
+            trade.short_call
+          }/${trade.long_call}
                         </td>
                         <td class="text-success fw-bold">
                             ${formatCurrency(trade.premium)}
@@ -388,20 +381,20 @@
                         </td>
                     </tr>
                 `
-            )
-            .join("");
+        )
+        .join("");
 
-          const positions = document.getElementById("positions");
-          positions.innerHTML = data.current_positions
-            .map(
-              (position) => `
+      const positions = document.getElementById("positions");
+      positions.innerHTML = data.current_positions
+        .map(
+          (position) => `
                     <li class="position-item">
                         <div>
                             <span class="position-strikes">${
                               position.short_put
                             }/${position.long_put} - ${position.short_call}/${
-                position.long_call
-              }</span>
+            position.long_call
+          }</span>
                             <div class="position-time">Opened: ${formatTime(
                               position.timestamp
                             )}</div>
@@ -421,82 +414,81 @@
                         }
                     </li>
                 `
-            )
-            .join("");
+        )
+        .join("");
 
-          // Update status indicator icon
-          document.querySelector("#status i").className =
-            "fas fa-check-circle me-2";
-        } catch (error) {
-          console.error("Error loading dashboard:", error);
-          document.querySelector("#status i").className =
-            "fas fa-exclamation-triangle me-2";
-          document.getElementById("status").innerHTML = `
+      // Update status indicator icon
+      document.querySelector("#status i").className =
+        "fas fa-check-circle me-2";
+    } catch (error) {
+      console.error("Error loading dashboard:", error);
+      document.querySelector("#status i").className =
+        "fas fa-exclamation-triangle me-2";
+      document.getElementById("status").innerHTML = `
                     <i class="fas fa-exclamation-triangle me-2"></i>Error loading data
                 `;
-        }
-      }
+    }
+  }
 
-      async function analyze() {
-        const analyzeBtn = document.querySelector(".analyze-btn");
-        const originalText = analyzeBtn.innerHTML;
+  async function analyze() {
+    const analyzeBtn = document.querySelector(".analyze-btn");
+    const originalText = analyzeBtn.innerHTML;
 
-        try {
-          analyzeBtn.disabled = true;
-          analyzeBtn.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...`;
+    try {
+      analyzeBtn.disabled = true;
+      analyzeBtn.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...`;
 
-          await fetch("/iron-condor/analyze", { method: "POST" });
-          await loadDashboard();
+      await fetch("/iron-condor/analyze", { method: "POST" });
+      await loadDashboard();
 
-          analyzeBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Analysis Complete`;
-          setTimeout(() => {
-            analyzeBtn.innerHTML = originalText;
-            analyzeBtn.disabled = false;
-          }, 2000);
-        } catch (error) {
-          console.error("Error analyzing:", error);
-          analyzeBtn.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>Error`;
-          setTimeout(() => {
-            analyzeBtn.innerHTML = originalText;
-            analyzeBtn.disabled = false;
-          }, 2000);
-        }
-      }
+      analyzeBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Analysis Complete`;
+      setTimeout(() => {
+        analyzeBtn.innerHTML = originalText;
+        analyzeBtn.disabled = false;
+      }, 2000);
+    } catch (error) {
+      console.error("Error analyzing:", error);
+      analyzeBtn.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>Error`;
+      setTimeout(() => {
+        analyzeBtn.innerHTML = originalText;
+        analyzeBtn.disabled = false;
+      }, 2000);
+    }
+  }
 
-      async function addPosition(trade) {
-        try {
-          await fetch("/iron-condor/position", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(trade),
-          });
-          await loadDashboard();
-        } catch (error) {
-          console.error("Error adding position:", error);
-        }
-      }
+  async function addPosition(trade) {
+    try {
+      await fetch("/iron-condor/position", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(trade),
+      });
+      await loadDashboard();
+    } catch (error) {
+      console.error("Error adding position:", error);
+    }
+  }
 
-      async function closePosition(id) {
-        try {
-          await fetch(`/iron-condor/position/${id}/close`, { method: "POST" });
-          await loadDashboard();
-        } catch (error) {
-          console.error("Error closing position:", error);
-        }
-      }
+  async function closePosition(id) {
+    try {
+      await fetch(`/iron-condor/position/${id}/close`, { method: "POST" });
+      await loadDashboard();
+    } catch (error) {
+      console.error("Error closing position:", error);
+    }
+  }
 
-      // Initial load
-      loadDashboard();
+  // Initial load
+  loadDashboard();
 
-      // Auto-refresh
-      setInterval(loadDashboard, 15000);
+  // Auto-refresh
+  setInterval(loadDashboard, 15000);
 
-      // Add animation to refresh indicator
-      setInterval(() => {
-        const icon = document.querySelector(".refresh-indicator i");
-        icon.classList.add("fa-spin");
-        setTimeout(() => icon.classList.remove("fa-spin"), 1000);
-      }, 15000);
-    </script>
-  </body>
-</html>
+  // Add animation to refresh indicator
+  setInterval(() => {
+    const icon = document.querySelector(".refresh-indicator i");
+    icon.classList.add("fa-spin");
+    setTimeout(() => icon.classList.remove("fa-spin"), 1000);
+  }, 15000);
+</script>
+{% endblock %}
