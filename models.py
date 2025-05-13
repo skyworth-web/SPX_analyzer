@@ -69,3 +69,28 @@ class SPXAnalysis(db.Model):
     timestamp = db.Column(db.DateTime(timezone=True))
     spx_price = db.Column(db.Float)
     opportunity = db.Column(JSONB)
+    
+class SpreadData(db.Model):
+    __tablename__ = 'spread_data'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime(timezone=True))
+    option_type = db.Column(db.String(4))
+    delta_bucket = db.Column(db.Float(5, 2))
+    point_spread = db.Column(db.Integer)
+    avg_credit = db.Column(db.Float(10, 4))
+    high_credit = db.Column(db.Float(10, 4))
+    low_credit = db.Column(db.Float(10, 4))
+
+class BSstream(db.Model):
+    __tablename__ = 'bs_stream'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime(timezone=True))
+    put_last = db.Column(db.Float)
+    underlying_price = db.Column(db.Float)
+    strike = db.Column(db.Float)
+    expiration_date = db.Column(db.Date)
+    risk_free_rate = db.Column(db.Float)
+    IV = db.Column(db.Float)
+    option_type = db.Column(db.String(4))

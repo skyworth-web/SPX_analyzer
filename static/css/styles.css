@@ -7,13 +7,13 @@
   --light-bg: #f8f9fa;
   --card-radius: 12px;
   --transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
-          --primary-color: #4361ee;
-        --secondary-color: #3f37c9;
-        --success-color: #4cc9f0;
-        --danger-color: #f72585;
-        --warning-color: #f8961e;
-        --dark-color: #212529;
-        --light-color: #f8f9fa;
+  --primary-color: #4361ee;
+  --secondary-color: #3f37c9;
+  --success-color: #4cc9f0;
+  --danger-color: #f72585;
+  --warning-color: #f8961e;
+  --dark-color: #212529;
+  --light-color: #f8f9fa;
 }
 
 .analyzer-dashboard {
@@ -277,6 +277,199 @@
   border-right: 6px solid var(--dark-bg);
 }
 
+
+body {
+  background-color: #f5f7fa;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+.dashboard-container {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.header-card {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  color: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.status-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.analyze-btn {
+  background-color: white;
+  color: var(--primary-color);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.analyze-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.section-title {
+  color: var(--dark-color);
+  margin: 1.5rem 0;
+  font-weight: 600;
+  border-left: 4px solid var(--primary-color);
+  padding-left: 0.75rem;
+}
+
+.opportunities-table {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.opportunities-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  padding: 1rem;
+}
+
+.opportunities-table td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+
+.score-cell {
+  font-weight: 600;
+  text-align: center;
+}
+
+.score-high {
+  color: #2a9d8f;
+}
+
+.score-medium {
+  color: #e9c46a;
+}
+
+.score-low {
+  color: #e76f51;
+}
+
+.strikes-cell {
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+}
+
+.action-btn {
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.positions-list {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.position-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+.position-item:hover {
+  background-color: #f8f9fa;
+}
+
+.position-strikes {
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+}
+
+.position-time {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.refresh-indicator {
+  font-size: 0.9rem;
+  color: #6c757d;
+  text-align: right;
+  margin-top: 1rem;
+}
+
+.badge-closed {
+  background-color: #6c757d;
+}
+
+.badge-open {
+  background-color: var(--success-color);
+}
+
+.greek-value {
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+}
+
+.delta-positive {
+  color: #2a9d8f;
+}
+
+.delta-negative {
+  color: #e76f51;
+}
+
+.iv-value {
+  font-weight: 600;
+}
+
+.iv-high {
+  color: #e76f51;
+}
+
+.iv-medium {
+  color: #e9c46a;
+}
+
+.iv-low {
+  color: #2a9d8f;
+}
+
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .dashboard-header {
@@ -298,5 +491,17 @@
   
   .analyzer-grid {
     grid-template-columns: 1fr;
+  }
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .header-card {
+    padding: 1rem;
+  }
+
+  .status-indicator {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
