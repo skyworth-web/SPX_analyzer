@@ -44,7 +44,7 @@ class ShortverticalAnalyzer(BaseAnalyzer):
         }
     }
 
-    def __init__(self):
+    def __init__(self, options_type='call'):
         super().__init__()  # Call the constructor of BaseAnalyzer
         self.current_analysis = {
             'timestamp': None,
@@ -62,6 +62,7 @@ class ShortverticalAnalyzer(BaseAnalyzer):
                 'adjustments': []
             }
         }
+        self.options_type = options_type
         initial_data = self.get_latest_results()  # Use the inherited method
         if initial_data:
             self.process_data_callback(initial_data)
