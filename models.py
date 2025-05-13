@@ -70,8 +70,8 @@ class SPXAnalysis(db.Model):
     spx_price = db.Column(db.Float)
     opportunity = db.Column(JSONB)
     
-class SpreadData(db.Model):
-    __tablename__ = 'spread_data'
+class CreditSpreadMetrics(db.Model):
+    __tablename__ = 'credit_spread_metrics'
     
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime(timezone=True))
@@ -82,8 +82,8 @@ class SpreadData(db.Model):
     high_credit = db.Column(db.Float(10, 4))
     low_credit = db.Column(db.Float(10, 4))
 
-class BSstream(db.Model):
-    __tablename__ = 'bs_stream'
+class BSMMispricing(db.Model):
+    __tablename__ = 'bsm_mispricings'
     
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime(timezone=True))
@@ -94,3 +94,4 @@ class BSstream(db.Model):
     risk_free_rate = db.Column(db.Float)
     IV = db.Column(db.Float)
     option_type = db.Column(db.String(4))
+    

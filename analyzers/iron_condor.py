@@ -145,9 +145,10 @@ class IroncondorAnalyzer(BaseAnalyzer):
                     short_call['bid'] - long_call['ask']
                 )
                 max_loss = self.STRATEGY_PARAMS['wing_width'] - premium
-                
+                print('==================== before')
                 if premium >= self.STRATEGY_PARAMS['min_premium'] and max_loss <= self.STRATEGY_PARAMS['max_risk']:
                     # Create trade structure
+                    print('==================== here')
                     trade = {
                         'spx_price': spx_price,
                         'short_put': short_put['strike'],

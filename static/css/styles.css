@@ -293,11 +293,9 @@ body {
 }
 
 .header-card {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--secondary-color)
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color),
+      var(--secondary-color));
   color: white;
   border-radius: 10px;
   padding: 1.5rem;
@@ -475,23 +473,24 @@ body {
   .dashboard-header {
     flex-direction: column;
   }
-  
+
   .controls {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-container {
     max-width: 100%;
   }
-  
+
   .filter-tabs {
     justify-content: center;
   }
-  
+
   .analyzer-grid {
     grid-template-columns: 1fr;
   }
+
   .dashboard-container {
     padding: 1rem;
   }
