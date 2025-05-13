@@ -1,83 +1,46 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('spread-chart').getContext('2d');
-    let chart;
-    let currentData = JSON.parse('{{ results | tojson | safe }}');
-    
-    // Initialize chart
-    function initChart() {
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: currentData.put_spreads.map(s => s.strike),
-                datasets: [{
-                    label: 'Credit Received',
-                    data: currentData.put_spreads.map(s => s.credit),
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Put Spread Credits by Strike'
-                    },
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Credit ($)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Strike Price'
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
-    // Refresh data from server
-    async function refreshData() {
-        try {
-            const response = await fetch('/spread/data');
-            currentData = await response.json();
-            
-            if (chart) {
-                updateChart();
-            } else {
-                initChart();
-            }
-            
-            // Update last updated time
-            document.querySelector('.last-updated').textContent = 
-                `Last updated: ${new Date(currentData.timestamp).toLocaleString()}`;
-                
-        } catch (error) {
-            console.error('Error refreshing data:', error);
-        }
-    }
-    
-    // Update existing chart with new data
-    function updateChart() {
-        chart.data.labels = currentData.put_spreads.map(s => s.strike);
-        chart.data.datasets[0].data = currentData.put_spreads.map(s => s.credit);
-        chart.update();
-    }
-    
-    // Event listeners
-    document.getElementById('refresh-btn').addEventListener('click', refreshData);
-    
-    // Initial setup
-    initChart();
-    
-    // Auto-refresh every 30 seconds
-    setInterval(refreshData, 30000);
+document.addEventListener("DOMContentLoaded", function () {
+    fetchData();
+
+    document.getElementById("run-analysis").addEventListener("click", function () {
+        this.disabled = true;
+        this.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Running...`;
+        fetch("/spread/analyze", {
+            method: "POST"
+        })
+            .then(res => res.json())
+            .then(data => {
+                fetchData();
+                document.getElementById("run-analysis").innerHTML = `<i class="fas fa-sync-alt"></i> Run Analysis`;
+                document.getElementById("run-analysis").disabled = false;
+                document.getElementById("last-run").textContent = `Last run: ${new Date(data.timestamp).toLocaleString()}`;
+            })
+            .catch(err => {
+                alert("Error running analysis.");
+                console.error(err);
+            });
+    });
 });
+
+function fetchData() {
+    fetch("/spread/data")
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector("#spread-table tbody");
+            tbody.innerHTML = "";
+
+            data.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+            <td>${new Date(row.timestamp).toLocaleString()}</td>
+            <td>${row.option_type.toUpperCase()}</td>
+            <td>${row.delta_bucket}</td>
+            <td>${row.point_spread}</td>
+            <td>${row.avg_credit.toFixed(4)}</td>
+            <td>${row.high_credit.toFixed(4)}</td>
+            <td>${row.low_credit.toFixed(4)}</td>
+          `;
+                tbody.appendChild(tr);
+            });
+        })
+        .catch(err => console.error("Failed to fetch spread data:", err));
+}
