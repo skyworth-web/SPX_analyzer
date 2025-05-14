@@ -17,7 +17,7 @@ function createRow(row) {
 }
 
 function loadData() {
-    fetch('/bs-deviation/data')
+    fetch('/new-dashboard/bs-deviation/data')
         .then(res => res.json())
         .then(data => {
             const callBody = document.querySelector('#call-table tbody');

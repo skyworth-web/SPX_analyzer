@@ -66,7 +66,7 @@
   }
 
   function fetchSpreadData() {
-    fetch("/spread/api/results")
+    fetch("/new-dashboard/spread/api/results")
       .then((response) => response.json())
       .then((data) => {
         document.getElementById("spread-results").innerHTML =
@@ -75,7 +75,7 @@
   }
 
   function fetchBSDeviationData() {
-    fetch("/bs-deviation/api/results")
+    fetch("/new-dashboard/bs-deviation/api/results")
       .then((response) => response.json())
       .then((data) => {
         document.getElementById("bs-deviation-results").innerHTML =
@@ -84,7 +84,7 @@
   }
 
   function fetchSkewData() {
-    fetch("/skew/api/results")
+    fetch("/new-dashboard/skew/api/results")
       .then((response) => response.json())
       .then((data) => {
         document.getElementById("skew-results").innerHTML =
@@ -93,7 +93,7 @@
   }
 
   function fetchMacroOverlayData() {
-    fetch("/macro-overlay/api/results")
+    fetch("/new-dashboard/macro-overlay/api/results")
       .then((response) => response.json())
       .then((data) => {
         document.getElementById("macro-overlay-results").innerHTML =

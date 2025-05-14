@@ -105,4 +105,5 @@ class BSDeviationAnalyzer(BaseAnalyzer):
             .limit(1)
         ).scalar()
         underlying_price = spot.strike_price if spot else None
+        print(f"=============Underlying price: {underlying_price}")  
         return underlying_price

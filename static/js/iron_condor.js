@@ -39,7 +39,7 @@ function formatDeltaBalance(callDelta, putDelta) {
 async function loadDashboard() {
   try {
     console.log("Loading dashboard...");
-    const statusResponse = await fetch("/iron-condor/status");
+    const statusResponse = await fetch("/new-dashboard/iron-condor/status");
     const status = await statusResponse.json();
 
     document.getElementById("status").innerHTML = `
@@ -57,7 +57,7 @@ async function loadDashboard() {
     )}</strong>
                 `;
 
-    const dataResponse = await fetch("/iron-condor/analysis");
+    const dataResponse = await fetch("/new-dashboard/iron-condor/analysis");
     const data = await dataResponse.json();
 
     const tbody = document.querySelector("#opportunities tbody");
@@ -152,7 +152,7 @@ async function analyze() {
     analyzeBtn.disabled = true;
     analyzeBtn.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...`;
 
-    await fetch("/iron-condor/analyze", { method: "POST" });
+    await fetch("/new-dashboard/iron-condor/analyze", { method: "POST" });
     await loadDashboard();
 
     analyzeBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Analysis Complete`;
@@ -172,7 +172,7 @@ async function analyze() {
 
 async function addPosition(trade) {
   try {
-    await fetch("/iron-condor/position", {
+    await fetch("/new-dashboard/iron-condor/position", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(trade),
@@ -185,7 +185,7 @@ async function addPosition(trade) {
 
 async function closePosition(id) {
   try {
-    await fetch(`/iron-condor/position/${id}/close`, { method: "POST" });
+    await fetch(`/new-dashboard/iron-condor/position/${id}/close`, { method: "POST" });
     await loadDashboard();
   } catch (error) {
     console.error("Error closing position:", error);
@@ -243,7 +243,7 @@ function formatDeltaBalance(callDelta, putDelta) {
 
 async function loadDashboard() {
   try {
-    const statusResponse = await fetch("/iron-condor/status");
+    const statusResponse = await fetch("/new-dashboard/iron-condor/status");
     const status = await statusResponse.json();
 
     document.getElementById("status").innerHTML = `
@@ -261,10 +261,8 @@ async function loadDashboard() {
     )}</strong>
                 `;
 
-    const dataResponse = await fetch("/iron-condor/analysis");
+    const dataResponse = await fetch("/new-dashboard/iron-condor/analysis");
     const data = await dataResponse.json();
-
-    console.log("==================Data loaded:", data);
 
     const tbody = document.querySelector("#opportunities tbody");
     tbody.innerHTML = data.scored_trades
@@ -358,7 +356,7 @@ async function analyze() {
     analyzeBtn.disabled = true;
     analyzeBtn.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...`;
 
-    await fetch("/iron-condor/analyze", { method: "POST" });
+    await fetch("/new-dashboard/iron-condor/analyze", { method: "POST" });
     await loadDashboard();
 
     analyzeBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Analysis Complete`;
@@ -378,7 +376,7 @@ async function analyze() {
 
 async function addPosition(trade) {
   try {
-    await fetch("/iron-condor/position", {
+    await fetch("/new-dashboard/iron-condor/position", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(trade),
@@ -391,7 +389,7 @@ async function addPosition(trade) {
 
 async function closePosition(id) {
   try {
-    await fetch(`/iron-condor/position/${id}/close`, { method: "POST" });
+    await fetch(`/new-dashboard/iron-condor/position/${id}/close`, { method: "POST" });
     await loadDashboard();
   } catch (error) {
     console.error("Error closing position:", error);

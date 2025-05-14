@@ -1,7 +1,7 @@
 document.getElementById('run-analysis').addEventListener('click', () => {
     document.getElementById('loading-indicator').classList.remove('d-none');
 
-    fetch('/spread/analyze', { method: 'POST' })
+    fetch('/new-dashboard/spread/analyze', { method: 'POST' })
         .then(res => res.json())
         .then(() => loadSpreadData())
         .catch(err => console.error(err))
@@ -9,7 +9,7 @@ document.getElementById('run-analysis').addEventListener('click', () => {
 });
 
 function loadSpreadData() {
-    fetch('/spread/data')
+    fetch('/new-dashboard/spread/data')
         .then(res => res.json())
         .then(data => {
             const grouped = {

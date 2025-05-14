@@ -3,12 +3,12 @@ from flask import Blueprint, render_template
 def create_blueprint():
     bp = Blueprint('main', __name__)
 
-    @bp.route('/')
-    @bp.route('/dashboard')
+    @bp.route('/new-dashboard/')
+    @bp.route('/new-dashboard/dashboard')
     def dashboard():
         return render_template('dashboard.html')
 
-    @bp.route('/analyzer-workspace')
+    @bp.route('/new-dashboard/analyzer-workspace')
     def analyzer_workspace():
         return render_template('analyzer_workspace.html')
 
@@ -26,9 +26,9 @@ def init_routes(app):
     from .iron_condor import bp as iron_condor_bp
     from .short_vertical import bp as short_vertical_bp
     
-    app.register_blueprint(spread_bp, url_prefix='/spread')
-    app.register_blueprint(bs_deviation_bp, url_prefix='/bs-deviation')
-    app.register_blueprint(skew_bp, url_prefix='/skew')
-    app.register_blueprint(macro_overlay_bp, url_prefix='/macro-overlay')
-    app.register_blueprint(iron_condor_bp, url_prefix='/iron-condor')
-    app.register_blueprint(short_vertical_bp, url_prefix='/shortvertical')
+    app.register_blueprint(spread_bp, url_prefix='/new-dashboard/spread')
+    app.register_blueprint(bs_deviation_bp, url_prefix='/new-dashboard/bs-deviation')
+    app.register_blueprint(skew_bp, url_prefix='/new-dashboard/skew')
+    app.register_blueprint(macro_overlay_bp, url_prefix='/new-dashboard/macro-overlay')
+    app.register_blueprint(iron_condor_bp, url_prefix='/new-dashboard/iron-condor')
+    app.register_blueprint(short_vertical_bp, url_prefix='/new-dashboard/shortvertical')

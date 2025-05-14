@@ -180,13 +180,19 @@ class SpreadAnalyzer(BaseAnalyzer):
         target_option = target_options.iloc[0]
         
         # Calculate credit for the spread
-        if option_type == 'call':
+        #if option_type == 'call':
             # Sell base option, buy target option
-            credit = option['bid'] - target_option['ask']
-        else:  # put
+        #    credit = option['bid'] - target_option['ask']
+        #else:  # put
             # Sell base option, buy target option
-            credit = option['bid'] - target_option['ask']
-        
+        #    credit = option['bid'] - target_option['ask']
+            
+        # Calculate mid prices
+        short_leg_mid = (option['bid'] + option['ask']) / 2
+        long_leg_mid = (target_option['bid'] + target_option['ask']) / 2
+
+        # Theoretical credit of the spread
+        credit = short_leg_mid - long_leg_mid
         # Only include valid spreads (positive credit)
         if credit <= 0:
             return None

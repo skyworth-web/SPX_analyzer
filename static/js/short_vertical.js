@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const types = ["call", "put"];
         try {
             for (let type of types) {
-                await fetch(`/shortvertical/${type}/analyze`, { method: "POST" });
+                await fetch(`/new-dashboard/shortvertical/${type}/analyze`, { method: "POST" });
             }
             fetchData();
             this.innerHTML = '<i class="fas fa-sync-alt"></i> Run Analysis';
@@ -29,7 +29,7 @@ function fetchData() {
     tableBody.innerHTML = "";
 
     types.forEach(type => {
-        fetch(`/shortvertical/${type}/data`)
+        fetch(`/new-dashboard/shortvertical/${type}/data`)
             .then(res => res.json())
             .then(data => {
                 for (let strategy of strategies) {
