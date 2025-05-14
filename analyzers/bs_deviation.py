@@ -2,8 +2,9 @@ from analyzers.base import BaseAnalyzer
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import pytz
+from models import SPXOptionStream, db
 
 class BSDeviationAnalyzer(BaseAnalyzer):
     def __init__(self):
@@ -45,13 +46,63 @@ class BSDeviationAnalyzer(BaseAnalyzer):
 
         return option_data
 
-    def analyze(self, option_data):
-        df = self.process_option_data(option_data)
+    def analyze(self):
 
+        session = db.session
+        # Get the latest timestamp
+        latest_timestamp = session.query(SPXOptionStream.timestamp)\
+                                  .order_by(SPXOptionStream.timestamp.desc())\
+                                  .first()
+
+        if not latest_timestamp:
+            return []
+
+        latest_time = latest_timestamp[0]
+
+        # Query latest records
+        records = session.query(SPXOptionStream).filter_by(timestamp=latest_time).all()
+        if not records:
+            return []
+
+        # Transform to long format: each row = one option (call or put)
+        rows = []
+        for r in records:
+            # Skip if IV is missing or zero
+            if r.call_iv:
+                rows.append({
+                    'strike': r.strike_price,
+                    'IV': r.call_iv,
+                    'option_type': 'call',
+                    'expiration_date': r.exp_date,
+                    'underlying_price': self.get_underlying_price(),  # You must define this
+                    'market_price': (r.call_bid + r.call_ask) / 2 if r.call_bid and r.call_ask else r.call_last,
+                })
+            if r.put_iv:
+                rows.append({
+                    'strike': r.strike_price,
+                    'IV': r.put_iv,
+                    'option_type': 'put',
+                    'expiration_date': r.exp_date,
+                    'underlying_price': self.get_underlying_price(),  # You must define this
+                    'market_price': (r.put_bid + r.put_ask) / 2 if r.put_bid and r.put_ask else r.put_last,
+                })
+
+        df = pd.DataFrame(rows)
+        if df.empty:
+            return []
+
+        df = self.process_option_data(df)
         df['Deviation'] = df['market_price'] - df['BS_Price']
         df['Percent_Deviation'] = (df['Deviation'] / df['BS_Price']) * 100
         df = df.sort_values(by='Percent_Deviation', ascending=False)
 
         return df.to_dict(orient='records')
-    def fetch_market_data(self):
-        return 0
+
+    def get_underlying_price(self):
+        spot = db.session.execute(
+            db.select(SPXOptionStream)
+            .order_by(SPXOptionStream.timestamp.desc())
+            .limit(1)
+        ).scalar()
+        underlying_price = spot.strike_price if spot else None
+        return underlying_price

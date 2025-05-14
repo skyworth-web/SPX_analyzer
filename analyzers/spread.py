@@ -22,54 +22,45 @@ class SpreadAnalyzer(BaseAnalyzer):
     def __init__(self, options_type = 'call'):
         super().__init__()
         self.options_type = options_type
-
-    def fetch_options_data(self):
-        """
-        Fetch the latest options data from your feed
+        self.current_analysis = {'timestamp': None, 'results': []}
         
-        Returns:
-            DataFrame with columns: 
-            - strike: float
-            - expiration: datetime
-            - option_type: str ('call' or 'put')
-            - bid: float
-            - ask: float
-            - delta: float
-        """
+    def fetch_options_data(self):
         options = db.session.execute(
             db.select(SPXOptionStream)
             .order_by(SPXOptionStream.timestamp.desc())
-            
         ).scalars()
-        strike = [], expiration = [], option_type = [], bid = [], ask = [], delta = []
-        
+
+        strike, expiration, option_type, bid, ask, delta = [], [], [], [], [], []
+
         for opt in options:
-            # if opt.exp_date not in organized_data:
-            #     organized_data = {'calls': [], 'puts': []}
+            # Call
             strike.append(opt.strike_price)
             expiration.append(opt.exp_date)
-            option_type.append('call' if self.options_type=='call' else 'put')
-            bid.append(opt.call_bid if self.options_type=='call' else opt.put_bid)
-            ask.append(opt.call_ask if self.options_type=='call' else opt.put_ask)
-            delta.append(opt.call_delta if self.options_type=='call' else opt.put_delta)
-            # Add other fields as necessary
-            
-        data = {
+            option_type.append('call')
+            bid.append(opt.call_bid)
+            ask.append(opt.call_ask)
+            delta.append(opt.call_delta)
+
+            # Put
+            strike.append(opt.strike_price)
+            expiration.append(opt.exp_date)
+            option_type.append('put')
+            bid.append(opt.put_bid)
+            ask.append(opt.put_ask)
+            delta.append(opt.put_delta)
+
+        df = pd.DataFrame({
             'strike': strike,
             'expiration': expiration,
             'option_type': option_type,
             'bid': bid,
             'ask': ask,
             'delta': delta
-        }
-        
-        df = pd.DataFrame(data)
-        
-        # Calculate mid price
+        })
         df['mid'] = (df['bid'] + df['ask']) / 2
-        
         logger.debug(f"Fetched {len(df)} options")
         return df
+
 
     def find_nearest_delta_options(self, options_df, target_delta, option_type):
         """
@@ -209,16 +200,21 @@ class SpreadAnalyzer(BaseAnalyzer):
         }
 
     def store_data(self, spread_data):
+        # Create the table if it doesn't exist
+        try:
+            CreditSpreadMetrics.__table__.create(db.engine, checkfirst=True)
+        except Exception as e:
+            logger.error(f"Error creating table: {e}")
         now = datetime.utcnow()
         rows = [
             CreditSpreadMetrics(
                 timestamp=now,
                 option_type=entry['option_type'],
-                delta_bucket=entry['delta_bucket'],
-                point_spread=entry['point_spread'],
-                avg_credit=entry['avg_credit'],
-                high_credit=entry['high_credit'],
-                low_credit=entry['low_credit']
+                delta_bucket=float(entry['delta_bucket']),
+                point_spread=int(entry['point_spread']),
+                avg_credit=float(entry['avg_credit']),
+                high_credit=float(entry['high_credit']),
+                low_credit=float(entry['low_credit'])
             )
             for entry in spread_data
         ]
@@ -226,19 +222,28 @@ class SpreadAnalyzer(BaseAnalyzer):
         db.session.commit()
 
 
+
     def analyze(self):
         try:
             options_data = self.fetch_options_data()
-            spread_data = self.calculate_credit_spreads(options_data)
-            self.store_data(spread_data)
+            combined_data = []
+
+            for option_type in ['call', 'put']:
+                self.options_type = option_type
+                spread_data = self.calculate_credit_spreads(options_data)
+                combined_data.extend(spread_data)
+
+            self.store_data(combined_data)
             self.current_analysis = {
                 'timestamp': datetime.utcnow(),
-                'results': spread_data
+                'results': combined_data
             }
             return self.current_analysis
+
         except Exception as e:
             logger.error(f"Error processing spread analysis: {e}")
             return {'timestamp': None, 'results': []}
 
+
     def get_latest_results(self):
-        return self.current_analysis.get('spread_data', [])
+        return self.current_analysis.get('result', [])

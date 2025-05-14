@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, jsonify
 from analyzers.bs_deviation import BSDeviationAnalyzer
-import pandas as pd
 
 bp = Blueprint('bs_deviation', __name__)
 
@@ -8,13 +7,12 @@ bp = Blueprint('bs_deviation', __name__)
 def bs_deviation_dashboard():
     return render_template('analyzers/bs_deviation.html')
 
-@bp.route('/bs-deviation/api', methods=['POST'])
-def bs_deviation_api():
-    try:
-        data = request.json.get('options_data')
-        df = pd.DataFrame(data)
-        analyzer = BSDeviationAnalyzer()
-        result = analyzer.analyze(df)
-        return jsonify({'status': 'success', 'results': result})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)})
+@bp.route('/data')
+def bs_deviation_data():
+    analyzer = BSDeviationAnalyzer()
+    data = analyzer.analyze()
+
+    calls = [row for row in data if row['option_type'] == 'call']
+    puts = [row for row in data if row['option_type'] == 'put']
+
+    return jsonify({'calls': calls, 'puts': puts})

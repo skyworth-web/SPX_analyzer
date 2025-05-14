@@ -1,54 +1,36 @@
-document.getElementById('analyzeBtn').addEventListener('click', async () => {
-    const inputText = document.getElementById('jsonInput').value;
-    let optionsData;
 
-    try {
-        optionsData = JSON.parse(inputText);
-    } catch (err) {
-        alert("Invalid JSON format");
-        return;
-    }
-
-    try {
-        const response = await axios.post('/bs-deviation/api', {
-            options_data: optionsData
-        });
-
-        if (response.data.status === 'success') {
-            displayResults(response.data.results);
-        } else {
-            alert("Error: " + response.data.message);
-        }
-    } catch (err) {
-        console.error(err);
-        alert("Request failed");
-    }
-});
-
-function displayResults(data) {
-    const container = document.getElementById('resultsContainer');
-    container.innerHTML = '';
-
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p>No results found.</p>';
-        return;
-    }
-
-    const table = document.createElement('table');
-    const headers = Object.keys(data[0]);
-    const headerRow = table.insertRow();
-    headers.forEach(h => {
-        const cell = headerRow.insertCell();
-        cell.textContent = h;
-    });
-
-    data.forEach(row => {
-        const tr = table.insertRow();
-        headers.forEach(h => {
-            const cell = tr.insertCell();
-            cell.textContent = typeof row[h] === 'number' ? row[h].toFixed(2) : row[h];
-        });
-    });
-
-    container.appendChild(table);
+function round(value, decimals = 2) {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }
+
+function createRow(row) {
+    return `
+    <tr>
+      <td>${row.strike}</td>
+      <td>${round(row.IV, 3)}</td>
+      <td>${round(row.BS_Price)}</td>
+      <td>${round(row.market_price)}</td>
+      <td>${round(row.Deviation)}</td>
+      <td>${round(row.Percent_Deviation)}%</td>
+    </tr>
+  `;
+}
+
+function loadData() {
+    fetch('/bs-deviation/data')
+        .then(res => res.json())
+        .then(data => {
+            const callBody = document.querySelector('#call-table tbody');
+            const putBody = document.querySelector('#put-table tbody');
+
+            callBody.innerHTML = data.calls.map(createRow).join('');
+            putBody.innerHTML = data.puts.map(createRow).join('');
+        })
+        .catch(err => {
+            console.error('Failed to fetch data:', err);
+            alert('Error loading data. See console for details.');
+        });
+}
+
+// Initial load
+document.addEventListener('DOMContentLoaded', loadData);

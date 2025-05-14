@@ -14,6 +14,7 @@
     <table class="table table-sm table-bordered table-striped" id="results-table">
         <thead class="thead-dark">
             <tr>
+                <th>Option Type</th>
                 <th>Strategy</th>
                 <th>Short Strike</th>
                 <th>Long Strike</th>
@@ -33,5 +34,5 @@
 <script>
     const OPTION_TYPE = "{{ option_type }}";
 </script>
-<script src="{{ url_for('static', filename='js/shortvertical.js') }}"></script>
+<script src="{{ url_for('static', filename='js/short_vertical.js') }}"></script>
 {% endblock %}

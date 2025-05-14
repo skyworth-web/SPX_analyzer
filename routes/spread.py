@@ -31,17 +31,27 @@ def run_analysis():
 
 @bp.route('/data')
 def spread_data():
-    data = CreditSpreadMetrics.query.order_by(CreditSpreadMetrics.timestamp.desc()).limit(100).all()
+    analyzer = current_app.analyzers.get('spread')
+    if not analyzer:
+        return jsonify({'error': 'Analyzer not found'}), 500
+
+    analysis = analyzer.current_analysis
+    if not analysis or not analysis.get('results'):
+        return jsonify([])
+
+    # Format results (optional: you can just return as-is if frontend expects raw)
     results = [
         {
-            'timestamp': r.timestamp.isoformat(),
-            'option_type': r.option_type,
-            'delta_bucket': r.delta_bucket,
-            'point_spread': r.point_spread,
-            'avg_credit': r.avg_credit,
-            'high_credit': r.high_credit,
-            'low_credit': r.low_credit
+            'timestamp': analysis['timestamp'].isoformat() if analysis['timestamp'] else None,
+            'option_type': entry['option_type'],
+            'delta_bucket': entry['delta_bucket'],
+            'point_spread': entry['point_spread'],
+            'avg_credit': entry['avg_credit'],
+            'high_credit': entry['high_credit'],
+            'low_credit': entry['low_credit']
         }
-        for r in data
+        for entry in analysis['results']
     ]
+
     return jsonify(results)
+

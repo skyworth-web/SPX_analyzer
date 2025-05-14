@@ -31,4 +31,4 @@ def init_routes(app):
     app.register_blueprint(skew_bp, url_prefix='/skew')
     app.register_blueprint(macro_overlay_bp, url_prefix='/macro-overlay')
     app.register_blueprint(iron_condor_bp, url_prefix='/iron-condor')
-    app.register_blueprint(short_vertical_bp, url_prefix='/short-vertical')
+    app.register_blueprint(short_vertical_bp, url_prefix='/shortvertical')

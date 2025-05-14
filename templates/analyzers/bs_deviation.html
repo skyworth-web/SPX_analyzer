@@ -1,19 +1,40 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block content %}
 <h2>Black-Scholes Deviation Analyzer</h2>
 
-<div class="form-group">
-  <label for="jsonInput">Paste Option Chain JSON:</label>
-  <textarea id="jsonInput" class="form-control" rows="12" placeholder="Paste option data as JSON array..."></textarea>
+<div class="mb-3">
+  <button class="btn btn-primary" onclick="loadData()">Refresh Analysis</button>
 </div>
 
-<button id="analyzeBtn" class="btn btn-primary mb-4">Analyze</button>
+<h4>Call Options</h4>
+<table class="table table-bordered table-sm table-striped" id="call-table">
+  <thead>
+    <tr>
+      <th>Strike</th>
+      <th>IV</th>
+      <th>BS Price</th>
+      <th>Market Price</th>
+      <th>Deviation</th>
+      <th>% Deviation</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-<div id="resultsContainer"></div>
-{% endblock %}
+<h4>Put Options</h4>
+<table class="table table-bordered table-sm table-striped" id="put-table">
+  <thead>
+    <tr>
+      <th>Strike</th>
+      <th>IV</th>
+      <th>BS Price</th>
+      <th>Market Price</th>
+      <th>Deviation</th>
+      <th>% Deviation</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="{{ url_for('static', filename='js/bs_deviation.js') }}"></script>
 {% endblock %}

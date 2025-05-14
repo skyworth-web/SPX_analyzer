@@ -10,22 +10,42 @@
   <span id="last-run" class="ml-3 text-muted"></span>
 </div>
 
-<div id="spread-table-wrapper">
-  <table class="table table-bordered table-sm table-striped" id="spread-table">
+<div id="loading-indicator" class="text-info d-none">
+  <i class="fas fa-spinner fa-spin"></i> Running analysis...
+</div>
+
+<!-- Call Credit Spread Pricing Table -->
+<h4>Call Credit Spread Pricing</h4>
+<div class="table-responsive mb-4">
+  <table class="table table-bordered table-sm text-center" id="call-pricing-table">
     <thead class="thead-dark">
       <tr>
-        <th>Timestamp</th>
-        <th>Option Type</th>
-        <th>Delta Bucket</th>
-        <th>Point Spread</th>
-        <th>Avg Credit</th>
-        <th>High Credit</th>
-        <th>Low Credit</th>
+        <th>*Adjustable Spread</th>
+        <!-- Delta Headers -->
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+      <!-- Low, Average, High rows -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Put Credit Spread Pricing Table -->
+<h4>Put Credit Spread Pricing</h4>
+<div class="table-responsive">
+  <table class="table table-bordered table-sm text-center" id="put-pricing-table">
+    <thead class="thead-dark">
+      <tr>
+        <th>*Adjustable Spread</th>
+        <!-- Delta Headers -->
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Low, Average, High rows -->
+    </tbody>
   </table>
 </div>
 
 <script src="{{ url_for('static', filename='js/spread.js') }}"></script>
+
 {% endblock %}
