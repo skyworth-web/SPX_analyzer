@@ -24,9 +24,11 @@ def init_routes(app):
     from .skew import bp as skew_bp
     from .macro_overlay import bp as macro_overlay_bp
     from .iron_condor import bp as iron_condor_bp
+    from .short_vertical import bp as short_vertical_bp
     
     app.register_blueprint(spread_bp, url_prefix='/spread')
     app.register_blueprint(bs_deviation_bp, url_prefix='/bs-deviation')
     app.register_blueprint(skew_bp, url_prefix='/skew')
     app.register_blueprint(macro_overlay_bp, url_prefix='/macro-overlay')
     app.register_blueprint(iron_condor_bp, url_prefix='/iron-condor')
+    app.register_blueprint(short_vertical_bp, url_prefix='/short-vertical')

@@ -71,65 +71,56 @@ class ShortverticalAnalyzer(BaseAnalyzer):
             logger.warning("No initial data available")
 
 
-    def find_short_call_vertical_opportunities(self, data, strategy_type):
-        """
-        Find short call vertical spread opportunities based on strategy type.
-        Returns the best opportunity (highest premium) within the specified parameters.
-        """
+    def find_vertical_opportunities(self, data, strategy_type):
         if not data or 'spx_price' not in data:
             logger.error("Invalid data received")
             return None
 
         spx_price = data['spx_price']
-        calls = sorted(data.get('calls', []), key=lambda x: x['strike'])
-        
+        options = sorted(data.get(self.options_type + 's', []), key=lambda x: x['strike'])
+
         params = self.STRATEGY_PARAMS[strategy_type]
         opportunities = []
-        
-        # Filter call options by delta range for short leg
-        short_call_candidates = [
-            c for c in calls 
-            if c.get('delta') and params['delta_range']['min'] <= abs(c['delta']) <= params['delta_range']['max']
+
+        short_leg_candidates = [
+            o for o in options
+            if o.get('delta') and params['delta_range']['min'] <= abs(o['delta']) <= params['delta_range']['max']
         ]
-        
-        for short_call in short_call_candidates:
-            # Calculate long call strike
-            long_call_strike = short_call['strike'] + params['wing_width']
-            
-            # Find matching long call
-            long_call = next((c for c in calls if c['strike'] == long_call_strike), None)
-            
-            if not long_call:
+
+        for short_leg in short_leg_candidates:
+            if self.options_type == 'call':
+                long_strike = short_leg['strike'] + params['wing_width']
+            else:  # put
+                long_strike = short_leg['strike'] - params['wing_width']
+
+            long_leg = next((o for o in options if o['strike'] == long_strike), None)
+            if not long_leg:
                 continue
 
-            # Calculate trade metrics
-            premium = short_call['bid'] - long_call['ask']
+            premium = short_leg['bid'] - long_leg['ask']
             max_loss = params['wing_width'] - premium
-            
+
             if premium >= params['min_premium']:
-                # Create trade structure
                 trade = {
                     'strategy_type': strategy_type,
                     'spx_price': spx_price,
-                    'short_call': short_call['strike'],
-                    'long_call': long_call['strike'],
+                    'short_leg': short_leg['strike'],
+                    'long_leg': long_leg['strike'],
                     'premium': round(premium, 2),
                     'max_loss': round(max_loss, 2),
                     'reward_to_risk': round(premium / max_loss, 2),
-                    'short_call_delta': short_call.get('delta', 0),
-                    'long_call_delta': long_call.get('delta', 0),
-                    'call_volume': short_call.get('volume', 0),
-                    'call_iv': short_call.get('volatility', 0),
-                    'gamma': short_call.get('gamma', 0),
-                    'theta': short_call.get('theta', 0),
-                    'timestamp': datetime.now().isoformat()
+                    'short_leg_delta': short_leg.get('delta', 0),
+                    'long_leg_delta': long_leg.get('delta', 0),
+                    'volume': short_leg.get('volume', 0),
+                    'iv': short_leg.get('volatility', 0),
+                    'gamma': short_leg.get('gamma', 0),
+                    'theta': short_leg.get('theta', 0),
+                    'timestamp': datetime.now().isoformat(),
+                    'option_type': self.options_type
                 }
                 opportunities.append(trade)
-        
-        # Sort by premium and return the best one
-        if opportunities:
-            return sorted(opportunities, key=lambda x: -x['premium'])[0]
-        return None
+
+        return sorted(opportunities, key=lambda x: -x['premium'])[0] if opportunities else None
 
     def process_data_callback(self, data):
         """
@@ -164,7 +155,7 @@ class ShortverticalAnalyzer(BaseAnalyzer):
             
             # Find opportunities for each strategy type
             for strategy_type in ['aggressive', 'moderate', 'conservative']:
-                opportunity = self.find_short_call_vertical_opportunities(data, strategy_type)
+                opportunity = self.find_vertical_opportunities(data, strategy_type)
                 self.current_analysis['trade_opportunities'][strategy_type] = opportunity
                 
                 if opportunity:

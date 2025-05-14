@@ -7,11 +7,7 @@ block content %}
     <div class="controls">
       <div class="search-container">
         <i class="fas fa-search"></i>
-        <input
-          type="text"
-          id="analyzerSearch"
-          placeholder="Search analyzers..."
-        />
+        <input type="text" id="analyzerSearch" placeholder="Search analyzers..." />
       </div>
       <div class="filter-tabs">
         <button class="filter-btn active" data-filter="all">
@@ -51,10 +47,7 @@ block content %}
         </div>
       </div>
       <div class="card-footer">
-        <a
-          href="{{ url_for('spread.spread_dashboard') }}"
-          class="btn btn-primary"
-        >
+        <a href="{{ url_for('spread.spread_dashboard') }}" class="btn btn-primary">
           Launch <i class="fas fa-arrow-right"></i>
         </a>
         <button class="settings-btn" aria-label="Settings">
@@ -121,10 +114,7 @@ block content %}
         </div>
       </div>
       <div class="card-footer">
-        <a
-          href="{{ url_for('iron_condor.iron_condor_dashboard') }}"
-          class="btn btn-primary"
-        >
+        <a href="{{ url_for('iron_condor.iron_condor_dashboard') }}" class="btn btn-primary">
           Launch <i class="fas fa-arrow-right"></i>
         </a>
         <button class="settings-btn" aria-label="Settings">
@@ -157,10 +147,7 @@ block content %}
         </div>
       </div>
       <div class="card-footer">
-        <a
-          href="{{ url_for('bs_deviation.bs_deviation_dashboard') }}"
-          class="btn btn-primary"
-        >
+        <a href="{{ url_for('bs_deviation.bs_deviation_dashboard') }}" class="btn btn-primary">
           Launch <i class="fas fa-arrow-right"></i>
         </a>
         <button class="settings-btn" aria-label="Settings">
@@ -193,10 +180,40 @@ block content %}
         </div>
       </div>
       <div class="card-footer">
-        <a
-          href="{{ url_for('macro_overlay.macro_overlay_dashboard') }}"
-          class="btn btn-primary"
-        >
+        <a href="{{ url_for('macro_overlay.macro_overlay_dashboard') }}" class="btn btn-primary">
+          Launch <i class="fas fa-arrow-right"></i>
+        </a>
+        <button class="settings-btn" aria-label="Settings">
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Short Vertical Analyzer Card -->
+    <div class="analyzer-card risk" data-features="skew,smile,term">
+      <div class="card-header">
+        <div class="card-icon yellow">
+          <i class="fa fa-globe" aria-hidden="true"></i>
+        </div>
+        <div class="card-title">
+          <h3>Short Vertical Analyzer</h3>
+          <span class="badge risk-badge">Risk</span>
+        </div>
+        <button class="star-btn starred" aria-label="Favorite">
+          <i class="fas fa-star"></i>
+        </button>
+      </div>
+      <div class="card-body">
+        <p>
+          Visualize volatility skew and term structure across multiple
+          expirations.
+        </p>
+        <div class="live-data">
+          <span><i class="fas fa-exchange-alt"></i> SKEW Index: 142.5</span>
+          <span><i class="fas fa-calendar-alt"></i> DTE: 7/21/35</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="{{ url_for('shortvertical.shortvertical_dashboard') }}" class="btn btn-primary">
           Launch <i class="fas fa-arrow-right"></i>
         </a>
         <button class="settings-btn" aria-label="Settings">

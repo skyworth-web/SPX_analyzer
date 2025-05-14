@@ -10,7 +10,7 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     }
 
     try {
-        const response = await axios.post('/api/bs-deviation', {
+        const response = await axios.post('/bs-deviation/api', {
             options_data: optionsData
         });
 

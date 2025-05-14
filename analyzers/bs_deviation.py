@@ -53,3 +53,5 @@ class BSDeviationAnalyzer(BaseAnalyzer):
         df = df.sort_values(by='Percent_Deviation', ascending=False)
 
         return df.to_dict(orient='records')
+    def fetch_market_data(self):
+        return 0

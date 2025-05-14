@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, current_app, request
 
-bp = Blueprint('shortvertical', __name__, url_prefix='/shortvertical')
+bp = Blueprint('shortvertical', __name__)
 
 @bp.route('/<option_type>')
 def shortvertical_dashboard(option_type):

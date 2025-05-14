@@ -2,13 +2,13 @@ from flask import Blueprint, render_template, request, jsonify
 from analyzers.bs_deviation import BSDeviationAnalyzer
 import pandas as pd
 
-bs_deviation_bp = Blueprint('bs_deviation', __name__)
+bp = Blueprint('bs_deviation', __name__)
 
-@bs_deviation_bp.route('/bs-deviation')
-def bs_deviation_page():
-    return render_template('bs_deviation.html')
+@bp.route('/')
+def bs_deviation_dashboard():
+    return render_template('analyzers/bs_deviation.html')
 
-@bs_deviation_bp.route('/api/bs-deviation', methods=['POST'])
+@bp.route('/bs-deviation/api', methods=['POST'])
 def bs_deviation_api():
     try:
         data = request.json.get('options_data')
