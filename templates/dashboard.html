@@ -1,106 +1,111 @@
-{% extends "base.html" %} {% block content %}
-<h1 class="text-center">Dashboard Overview</h1>
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-center my-4">Analytics Dashboard</h1>
+
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-header">
-        <h2>Spread Analyzer</h2>
+        <h5>Call Credit Spread Pricing</h5>
       </div>
-      <div class="card-body">
-        <div id="spread-results" class="analyzer-content"></div>
-        <button class="btn btn-primary" onclick="fetchSpreadData()">
-          Refresh Data
-        </button>
+      <div class="card-body" id="call-spread-results">Loading...</div>
+    </div>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>Top 3 Mispriced Calls</h5>
       </div>
+      <div class="card-body" id="mispricing-calls">Loading...</div>
+    </div>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>IV/Tail Delta to OI % (Calls)</h5>
+      </div>
+      <div class="card-body" id="iv-tail-call">Loading...</div>
     </div>
   </div>
-  <div class="col-md-4">
+
+  <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-header">
-        <h2>Black-Scholes Deviation</h2>
+        <h5>Put Credit Spread Pricing</h5>
       </div>
-      <div class="card-body">
-        <div id="bs-deviation-results" class="analyzer-content"></div>
-        <button class="btn btn-primary" onclick="fetchBSDeviationData()">
-          Refresh Data
-        </button>
-      </div>
+      <div class="card-body" id="put-spread-results">Loading...</div>
     </div>
-  </div>
-  <div class="col-md-4">
     <div class="card mb-4">
       <div class="card-header">
-        <h2>Skew Curve</h2>
+        <h5>Top 3 Mispriced Puts</h5>
       </div>
-      <div class="card-body">
-        <div id="skew-results" class="analyzer-content"></div>
-        <button class="btn btn-primary" onclick="fetchSkewData()">
-          Refresh Data
-        </button>
+      <div class="card-body" id="mispricing-puts">Loading...</div>
+    </div>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>IV/Tail Delta to OI % (Puts)</h5>
       </div>
+      <div class="card-body" id="iv-tail-put">Loading...</div>
     </div>
   </div>
 </div>
+
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-header">
-        <h2>Macro Overlay</h2>
+        <h5>Skew Curve Mapping Alerts</h5>
       </div>
-      <div class="card-body">
-        <div id="macro-overlay-results" class="analyzer-content"></div>
-        <button class="btn btn-primary" onclick="fetchMacroOverlayData()">
-          Refresh Data
-        </button>
+      <div class="card-body" id="skew-curve-alerts">Loading...</div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>Delta Slope Heat Map Shifts</h5>
       </div>
+      <div class="card-body" id="delta-slope-shifts">Loading...</div>
     </div>
   </div>
 </div>
 
 <script>
-  function fetchAnalyzerResults() {
-    fetchSpreadData();
-    fetchBSDeviationData();
-    fetchSkewData();
-    fetchMacroOverlayData();
-  }
+  document.addEventListener("DOMContentLoaded", fetchDashboardData);
 
-  function fetchSpreadData() {
-    fetch("/new-dashboard/spread/api/results")
-      .then((response) => response.json())
-      .then((data) => {
-        document.getElementById("spread-results").innerHTML =
-          JSON.stringify(data);
+  function fetchDashboardData() {
+    fetch("/api/dashboard/data")
+      .then(res => res.json())
+      .then(data => {
+        renderSpreadPricing("call-spread-results", data.call_spread_pricing);
+        renderSpreadPricing("put-spread-results", data.put_spread_pricing);
+        renderMispricing("mispricing-calls", data.mispricing_index.calls);
+        renderMispricing("mispricing-puts", data.mispricing_index.puts);
+        renderList("skew-curve-alerts", data.skew_curve_alerts, a => `Type: ${a.type}, Δ: ${a.delta}, Strike: ${a.strike}`);
+        renderList("delta-slope-shifts", data.delta_slope_shifts, s => `From ${s.from} → ${s.to}`);
+        document.getElementById("iv-tail-call").textContent = data.iv_tail_oi_skew.call + "%";
+        document.getElementById("iv-tail-put").textContent = data.iv_tail_oi_skew.put + "%";
+      })
+      .catch(err => {
+        console.error("Dashboard load error:", err);
       });
   }
 
-  function fetchBSDeviationData() {
-    fetch("/new-dashboard/bs-deviation/api/results")
-      .then((response) => response.json())
-      .then((data) => {
-        document.getElementById("bs-deviation-results").innerHTML =
-          JSON.stringify(data);
-      });
+  function renderSpreadPricing(id, pricing) {
+    const deltas = Object.keys(pricing);
+    const headers = deltas.map(d => `<th>${d}</th>`).join("");
+    const row = type => `<tr><th>${type}</th>` + deltas.map(d => `<td>${pricing[d][type.toLowerCase()]}</td>`).join("") + "</tr>";
+    document.getElementById(id).innerHTML = `
+      <table class="table table-bordered table-sm">
+        <thead><tr><th></th>${headers}</tr></thead>
+        <tbody>${row("Low")}${row("Average")}${row("High")}</tbody>
+      </table>`;
   }
 
-  function fetchSkewData() {
-    fetch("/new-dashboard/skew/api/results")
-      .then((response) => response.json())
-      .then((data) => {
-        document.getElementById("skew-results").innerHTML =
-          JSON.stringify(data);
-      });
+  function renderMispricing(id, list) {
+    const html = list.slice(0, 3).map(item =>
+      `<li>Strike ${item.strike} → <strong>${item.percent_deviation.toFixed(2)}%</strong></li>`
+    ).join("");
+    document.getElementById(id).innerHTML = `<ul>${html}</ul>`;
   }
 
-  function fetchMacroOverlayData() {
-    fetch("/new-dashboard/macro-overlay/api/results")
-      .then((response) => response.json())
-      .then((data) => {
-        document.getElementById("macro-overlay-results").innerHTML =
-          JSON.stringify(data);
-      });
+  function renderList(id, list, formatter) {
+    document.getElementById(id).innerHTML = `<ul>${list.map(item => `<li>${formatter(item)}</li>`).join("")}</ul>`;
   }
-
-  fetchAnalyzerResults();
 </script>
 {% endblock %}
