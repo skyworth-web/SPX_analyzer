@@ -30,11 +30,12 @@ def run_analysis():
     return jsonify({'status': 'completed', 'timestamp': result['timestamp']})
 
 @bp.route('/data')
-def spread_data():
+async def spread_data():
     analyzer = current_app.analyzers.get('spread')
     if not analyzer:
         return jsonify({'error': 'Analyzer not found'}), 500
 
+    analyzer.analyze()
     analysis = analyzer.current_analysis
     if not analysis or not analysis.get('results'):
         return jsonify([])
@@ -54,4 +55,3 @@ def spread_data():
     ]
 
     return jsonify(results)
-

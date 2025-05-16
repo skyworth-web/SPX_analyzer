@@ -3,19 +3,35 @@
 <h1 class="text-center my-4">Analytics Dashboard</h1>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-xl-6 col-lg-12 col-md-12">
+    <!-- Call Credit Spread Pricing -->
     <div class="card mb-4">
       <div class="card-header">
         <h5>Call Credit Spread Pricing</h5>
       </div>
-      <div class="card-body" id="call-spread-results">Loading...</div>
+      <div class="card-body">
+        <div class="table-responsive mb-4">
+          <table class="table table-bordered table-sm text-center" id="call-pricing-table">
+            <thead class="thead-dark">
+              <tr>
+                <th>*Adjustable Spread</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </div>
+
+    <!-- Top 3 Mispriced Calls -->
     <div class="card mb-4">
       <div class="card-header">
         <h5>Top 3 Mispriced Calls</h5>
       </div>
       <div class="card-body" id="mispricing-calls">Loading...</div>
     </div>
+
+    <!-- IV Tail Delta to OI (Calls) -->
     <div class="card mb-4">
       <div class="card-header">
         <h5>IV/Tail Delta to OI % (Calls)</h5>
@@ -24,19 +40,35 @@
     </div>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-xl-6 col-lg-12 col-md-12 mb-4">
+    <!-- Put Credit Spread Pricing -->
     <div class="card mb-4">
       <div class="card-header">
         <h5>Put Credit Spread Pricing</h5>
       </div>
-      <div class="card-body" id="put-spread-results">Loading...</div>
+      <div class="card-body">
+        <div class="table-responsive mb-4">
+          <table class="table table-bordered table-sm text-center" id="put-pricing-table">
+            <thead class="thead-dark">
+              <tr>
+                <th>*Adjustable Spread</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </div>
+
+    <!-- Top 3 Mispriced Puts -->
     <div class="card mb-4">
       <div class="card-header">
         <h5>Top 3 Mispriced Puts</h5>
       </div>
       <div class="card-body" id="mispricing-puts">Loading...</div>
     </div>
+
+    <!-- IV Tail Delta to OI (Puts) -->
     <div class="card mb-4">
       <div class="card-header">
         <h5>IV/Tail Delta to OI % (Puts)</h5>
@@ -48,64 +80,66 @@
 
 <div class="row">
   <div class="col-md-6">
+    <!-- Skew Alerts -->
     <div class="card mb-4">
       <div class="card-header">
-        <h5>Skew Curve Mapping Alerts</h5>
+        <h5>Skew Curve Alerts</h5>
       </div>
       <div class="card-body" id="skew-curve-alerts">Loading...</div>
     </div>
   </div>
   <div class="col-md-6">
+    <!-- Delta Slope Shift -->
     <div class="card mb-4">
       <div class="card-header">
-        <h5>Delta Slope Heat Map Shifts</h5>
+        <h5>Delta Slope Shift</h5>
       </div>
       <div class="card-body" id="delta-slope-shifts">Loading...</div>
     </div>
   </div>
 </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", fetchDashboardData);
+<!-- Include spread logic -->
+<script src="{{ url_for('static', filename='js/spread.js') }}"></script>
 
-  function fetchDashboardData() {
-    fetch("/api/dashboard/data")
-      .then(res => res.json())
-      .then(data => {
-        renderSpreadPricing("call-spread-results", data.call_spread_pricing);
-        renderSpreadPricing("put-spread-results", data.put_spread_pricing);
-        renderMispricing("mispricing-calls", data.mispricing_index.calls);
-        renderMispricing("mispricing-puts", data.mispricing_index.puts);
-        renderList("skew-curve-alerts", data.skew_curve_alerts, a => `Type: ${a.type}, Δ: ${a.delta}, Strike: ${a.strike}`);
-        renderList("delta-slope-shifts", data.delta_slope_shifts, s => `From ${s.from} → ${s.to}`);
-        document.getElementById("iv-tail-call").textContent = data.iv_tail_oi_skew.call + "%";
-        document.getElementById("iv-tail-put").textContent = data.iv_tail_oi_skew.put + "%";
-      })
-      .catch(err => {
-        console.error("Dashboard load error:", err);
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Load spread pricing via existing spread.js
+    loadSpreadData();
+
+    // Other dashboard sections
+    fetchSection("/api/mispricing/calls", renderMispricing, "mispricing-calls");
+    fetchSection("/api/mispricing/puts", renderMispricing, "mispricing-puts");
+    fetchSection("/api/skew-alerts", renderListItem, "skew-curve-alerts");
+    fetchSection("/api/delta-slope", renderListItem, "delta-slope-shifts");
+    fetchSection("/api/iv-tail-oi/call", renderTextValue, "iv-tail-call");
+    fetchSection("/api/iv-tail-oi/put", renderTextValue, "iv-tail-put");
+  });
+
+  function fetchSection(url, renderFunc, elementId) {
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => renderFunc(data, elementId))
+      .catch((err) => {
+        document.getElementById(elementId).textContent = "Error loading data.";
+        console.error(`Failed to load ${url}`, err);
       });
   }
 
-  function renderSpreadPricing(id, pricing) {
-    const deltas = Object.keys(pricing);
-    const headers = deltas.map(d => `<th>${d}</th>`).join("");
-    const row = type => `<tr><th>${type}</th>` + deltas.map(d => `<td>${pricing[d][type.toLowerCase()]}</td>`).join("") + "</tr>";
-    document.getElementById(id).innerHTML = `
-      <table class="table table-bordered table-sm">
-        <thead><tr><th></th>${headers}</tr></thead>
-        <tbody>${row("Low")}${row("Average")}${row("High")}</tbody>
-      </table>`;
-  }
-
-  function renderMispricing(id, list) {
-    const html = list.slice(0, 3).map(item =>
+  function renderMispricing(data, elementId) {
+    const html = data.slice(0, 3).map(item =>
       `<li>Strike ${item.strike} → <strong>${item.percent_deviation.toFixed(2)}%</strong></li>`
     ).join("");
-    document.getElementById(id).innerHTML = `<ul>${html}</ul>`;
+    document.getElementById(elementId).innerHTML = `<ul>${html}</ul>`;
   }
 
-  function renderList(id, list, formatter) {
-    document.getElementById(id).innerHTML = `<ul>${list.map(item => `<li>${formatter(item)}</li>`).join("")}</ul>`;
+  function renderListItem(data, elementId) {
+    const html = data.map(item => `<li>${Object.values(item).join(" | ")}</li>`).join("");
+    document.getElementById(elementId).innerHTML = `<ul>${html}</ul>`;
+  }
+
+  function renderTextValue(value, elementId) {
+    document.getElementById(elementId).textContent = `${value}%`;
   }
 </script>
 {% endblock %}

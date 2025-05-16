@@ -133,7 +133,7 @@ class SpreadAnalyzer(BaseAnalyzer):
                             'point_spread': spread
                         })
                         results.append(spread_data)
-        
+                        
         return results
 
     def calculate_spread_for_option(self, options_df, option, point_spread, option_type):

@@ -36,6 +36,7 @@ function loadSpreadData() {
             }
 
             const sortedDeltas = Array.from(deltaBuckets).sort((a, b) => a - b);
+            console.log('Sorted Deltas:', sortedDeltas);
             renderPricingTable('call', grouped.call, sortedDeltas);
             renderPricingTable('put', grouped.put, sortedDeltas);
         });
