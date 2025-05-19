@@ -1,74 +1,91 @@
-document.getElementById('run-analysis').addEventListener('click', () => {
-    document.getElementById('loading-indicator').classList.remove('d-none');
+document.addEventListener("DOMContentLoaded", function () {
+    const runButton = document.getElementById("run-analysis");
+    const loadingIndicator = document.getElementById("loading-indicator");
+    const lastRun = document.getElementById("last-run");
 
-    fetch('/new-dashboard/spread/analyze', { method: 'POST' })
-        .then(res => res.json())
-        .then(() => loadSpreadData())
-        .catch(err => console.error(err))
-        .finally(() => document.getElementById('loading-indicator').classList.add('d-none'));
-});
+    runButton.addEventListener("click", async function () {
+        loadingIndicator.classList.remove("d-none");
 
-function loadSpreadData() {
-    fetch('/new-dashboard/spread/data')
-        .then(res => res.json())
-        .then(data => {
-            const grouped = {
-                call: {},
-                put: {}
-            };
+        try {
+            const response = await fetch("/analyze_spreads");  // Adjust this if your endpoint differs
+            if (!response.ok) throw new Error("Network response was not ok");
 
-            const deltaBuckets = new Set();
+            const data = await response.json();
+            renderTables(data);
 
-            for (const row of data) {
-                const { option_type, delta_bucket, point_spread, avg_credit, high_credit, low_credit } = row;
-                deltaBuckets.add(delta_bucket);
-
-                const key = `${point_spread}`;
-                if (!grouped[option_type][key]) {
-                    grouped[option_type][key] = {};
-                }
-
-                grouped[option_type][key][delta_bucket] = {
-                    avg: avg_credit,
-                    high: high_credit,
-                    low: low_credit
-                };
-            }
-
-            const sortedDeltas = Array.from(deltaBuckets).sort((a, b) => a - b);
-            console.log('Sorted Deltas:', sortedDeltas);
-            renderPricingTable('call', grouped.call, sortedDeltas);
-            renderPricingTable('put', grouped.put, sortedDeltas);
-        });
-}
-
-function renderPricingTable(type, data, deltas) {
-    const table = document.getElementById(`${type}-pricing-table`);
-    const thead = table.querySelector('thead tr');
-    const tbody = table.querySelector('tbody');
-
-    // Clear existing
-    thead.innerHTML = '<th>*Adjustable Spread</th>';
-    tbody.innerHTML = '';
-
-    // Header
-    deltas.forEach(delta => {
-        thead.innerHTML += `<th>${delta.toFixed(2)} Δ</th>`;
-    });
-
-    // Rows: Low, Average, High
-    ['low', 'avg', 'high'].forEach(metric => {
-        for (const point_spread of Object.keys(data).sort((a, b) => a - b)) {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${metric.charAt(0).toUpperCase() + metric.slice(1)} (${point_spread}pt)</td>`;
-            deltas.forEach(delta => {
-                const value = data[point_spread]?.[delta]?.[metric];
-                row.innerHTML += `<td>${value?.toFixed(2) ?? '-'}</td>`;
-            });
-            tbody.appendChild(row);
+            const now = new Date();
+            lastRun.textContent = `Last run: ${now.toLocaleString()}`;
+        } catch (err) {
+            console.error("Error running analysis:", err);
+            alert("Failed to run analysis.");
+        } finally {
+            loadingIndicator.classList.add("d-none");
         }
     });
-}
 
-// Load once on page load
-loadSpreadData();
+    function renderTables(data) {
+        const container = document.querySelector("#content"); // Replace with a better selector if needed
+
+        // Remove old tables
+        const oldTables = container.querySelectorAll("table");
+        oldTables.forEach((table) => table.remove());
+
+        ["Call", "Put"].forEach((type) => {
+            const typeHeader = document.createElement("h3");
+            typeHeader.textContent = `${type} Credit Spreads`;
+            container.appendChild(typeHeader);
+
+            const spreads = data[type];
+            for (const spread in spreads) {
+                const buckets = spreads[spread];
+
+                const spreadHeader = document.createElement("h4");
+                spreadHeader.textContent = spread;
+                container.appendChild(spreadHeader);
+
+                const table = document.createElement("table");
+                table.className = "table table-bordered table-sm text-center";
+
+                const thead = document.createElement("thead");
+                thead.className = "thead-dark";
+
+                const trHead = document.createElement("tr");
+                trHead.innerHTML = `<th>Time Bucket</th>`;
+
+                const deltas = Object.keys(buckets[Object.keys(buckets)[0]]["Ave"]);
+                deltas.forEach((delta) => {
+                    const th = document.createElement("th");
+                    th.textContent = delta;
+                    trHead.appendChild(th);
+                });
+                thead.appendChild(trHead);
+                table.appendChild(thead);
+
+                const tbody = document.createElement("tbody");
+
+                for (const bucket in buckets) {
+                    ["Ave", "High", "Low"].forEach((stat) => {
+                        const row = document.createElement("tr");
+                        const labelCell = document.createElement("th");
+                        labelCell.textContent = `${bucket} ${stat}:`;
+                        row.appendChild(labelCell);
+
+                        deltas.forEach((delta) => {
+                            const td = document.createElement("td");
+                            td.textContent = buckets[bucket][stat][delta].toFixed(2);
+                            row.appendChild(td);
+                        });
+
+                        tbody.appendChild(row);
+                    });
+                }
+
+                table.appendChild(tbody);
+                const wrapper = document.createElement("div");
+                wrapper.className = "table-responsive mb-5";
+                wrapper.appendChild(table);
+                container.appendChild(wrapper);
+            }
+        });
+    }
+});

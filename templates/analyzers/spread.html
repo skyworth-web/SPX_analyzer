@@ -14,38 +14,93 @@
   <i class="fas fa-spinner fa-spin"></i> Running analysis...
 </div>
 
-<!-- Call Credit Spread Pricing Table -->
-<h4>Call Credit Spread Pricing</h4>
-<div class="table-responsive mb-4">
-  <table class="table table-bordered table-sm text-center" id="call-pricing-table">
+<!-- ====================== -->
+<!-- CALL CREDIT SPREADS -->
+<!-- ====================== -->
+<h3>Call Credit Spreads</h3>
+{% for spread, buckets in results['Call'].items() %}
+<h4>{{ spread }}</h4>
+{% set all_deltas = buckets.values() | map(attribute='Ave') | list %}
+{% set all_keys = all_deltas[0].keys() if all_deltas else [] %}
+<div class="table-responsive mb-5">
+  <table class="table table-bordered table-sm text-center">
     <thead class="thead-dark">
       <tr>
-        <th>*Adjustable Spread</th>
-        <!-- Delta Headers -->
+        <th>Time Bucket</th>
+        {% for delta in all_keys %}
+        <th>{{ delta }}</th>
+        {% endfor %}
       </tr>
     </thead>
     <tbody>
-      <!-- Low, Average, High rows -->
+      {% for bucket, stats in buckets.items() %}
+      <tr>
+        <th>{{ bucket }} Ave:</th>
+        {% for val in stats['Ave'].values() %}
+        <td>{{ val }}</td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>{{ bucket }} High:</th>
+        {% for val in stats['High'].values() %}
+        <td>{{ val }}</td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>{{ bucket }} Low:</th>
+        {% for val in stats['Low'].values() %}
+        <td>{{ val }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>
+{% endfor %}
 
-<!-- Put Credit Spread Pricing Table -->
-<h4>Put Credit Spread Pricing</h4>
-<div class="table-responsive">
-  <table class="table table-bordered table-sm text-center" id="put-pricing-table">
+<!-- ====================== -->
+<!-- PUT CREDIT SPREADS -->
+<!-- ====================== -->
+<h3>Put Credit Spreads</h3>
+{% for spread, buckets in results['Put'].items() %}
+<h4>{{ spread }}</h4>
+{% set all_deltas = buckets.values() | map(attribute='Ave') | list %}
+{% set all_keys = all_deltas[0].keys() if all_deltas else [] %}
+<div class="table-responsive mb-5">
+  <table class="table table-bordered table-sm text-center">
     <thead class="thead-dark">
       <tr>
-        <th>*Adjustable Spread</th>
-        <!-- Delta Headers -->
+        <th>Time Bucket</th>
+        {% for delta in all_keys %}
+        <th>{{ delta }}</th>
+        {% endfor %}
       </tr>
     </thead>
     <tbody>
-      <!-- Low, Average, High rows -->
+      {% for bucket, stats in buckets.items() %}
+      <tr>
+        <th>{{ bucket }} Ave:</th>
+        {% for val in stats['Ave'].values() %}
+        <td>{{ val }}</td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>{{ bucket }} High:</th>
+        {% for val in stats['High'].values() %}
+        <td>{{ val }}</td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>{{ bucket }} Low:</th>
+        {% for val in stats['Low'].values() %}
+        <td>{{ val }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>
+{% endfor %}
 
 <script src="{{ url_for('static', filename='js/spread.js') }}"></script>
-
 {% endblock %}
