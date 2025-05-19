@@ -78,9 +78,7 @@ class CreditSpreadMetrics(db.Model):
     option_type = db.Column(db.String(4))
     delta_bucket = db.Column(db.Float(5, 2))
     point_spread = db.Column(db.Integer)
-    avg_credit = db.Column(db.Float(10, 4))
-    high_credit = db.Column(db.Float(10, 4))
-    low_credit = db.Column(db.Float(10, 4))
+    credit = db.Column(db.Float(10, 4))
 
 class BSMMispricing(db.Model):
     __tablename__ = 'bsm_mispricings'
@@ -94,4 +92,3 @@ class BSMMispricing(db.Model):
     risk_free_rate = db.Column(db.Float)
     IV = db.Column(db.Float)
     option_type = db.Column(db.String(4))
-    

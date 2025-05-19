@@ -57,7 +57,7 @@ class BaseAnalyzer:
             # options = db.session.query(SPXOptionStream).limit(10).all()
             
             if not options:
-                self.logger.warning(f"No options data found since {cutoff}")
+                # self.logger.warning(f"No options data found since {cutoff}")
                 # Return minimal data structure to prevent template errors
                 return {
                     'timestamp': datetime.now().isoformat(),
@@ -140,7 +140,7 @@ class BaseAnalyzer:
             
             self.last_results = results
             self.last_run = datetime.now()
-            self.logger.info(f"Analysis completed at {self.last_run}")
+            # self.logger.info(f"Analysis completed at {self.last_run}")
         except Exception as e:
             db.session.rollback()
             self.logger.error(f"Failed to save results: {str(e)}")

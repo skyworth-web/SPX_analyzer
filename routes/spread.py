@@ -25,33 +25,16 @@ def run_analysis():
     analyzer = current_app.analyzers.get('spread')
     if not analyzer:
         return jsonify({'error': 'Analyzer not found'}), 500
-
+    analyzer.start_periodic_analysis()
+    results = analyzer.get_latest_results()
+    
     result = analyzer.analyze()
     return jsonify({'status': 'completed', 'timestamp': result['timestamp']})
 
 @bp.route('/data')
 async def spread_data():
     analyzer = current_app.analyzers.get('spread')
-    if not analyzer:
-        return jsonify({'error': 'Analyzer not found'}), 500
-
-    analyzer.analyze()
-    analysis = analyzer.current_analysis
-    if not analysis or not analysis.get('results'):
-        return jsonify([])
-
-    # Format results (optional: you can just return as-is if frontend expects raw)
-    results = [
-        {
-            'timestamp': analysis['timestamp'].isoformat() if analysis['timestamp'] else None,
-            'option_type': entry['option_type'],
-            'delta_bucket': entry['delta_bucket'],
-            'point_spread': entry['point_spread'],
-            'avg_credit': entry['avg_credit'],
-            'high_credit': entry['high_credit'],
-            'low_credit': entry['low_credit']
-        }
-        for entry in analysis['results']
-    ]
-
+    analyzer.start_periodic_analysis()
+    results = analyzer.get_latest_results()
+    
     return jsonify(results)

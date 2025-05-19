@@ -181,7 +181,7 @@ class IroncondorAnalyzer(BaseAnalyzer):
         Callback function to process new data from the streamer.
         Updates the global analysis state.
         """
-        logger.info("Received data from streamer")
+        # logger.info("Received data from streamer")
         if not data:
             logger.warning("No data received in callback")
             return
