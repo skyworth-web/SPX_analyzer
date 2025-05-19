@@ -26,7 +26,6 @@ def run_analysis():
     if not analyzer:
         return jsonify({'error': 'Analyzer not found'}), 500
     analyzer.start_periodic_analysis()
-    results = analyzer.get_latest_results()
     
     result = analyzer.analyze()
     return jsonify({'status': 'completed', 'timestamp': result['timestamp']})

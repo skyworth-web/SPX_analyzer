@@ -12,6 +12,7 @@ import pytz
 from flask import current_app
 from sqlalchemy import func
 import time as int_time
+from decimal import Decimal, InvalidOperation
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -187,6 +188,7 @@ class SpreadAnalyzer(BaseAnalyzer):
                 logger.error(f"Error creating table: {e}")
                 
             cst_time = datetime.now(self.cst_tz)
+            print("====================cst_time:", cst_time)
             rows = [
                 CreditSpreadMetrics(
                     timestamp=cst_time,
@@ -201,6 +203,7 @@ class SpreadAnalyzer(BaseAnalyzer):
             db.session.commit()
 
     def analyze(self):
+        print("=============================Analyzing...")
         try:
             with current_app.app_context():
                 options_data = self.fetch_options_data()
@@ -280,9 +283,8 @@ class SpreadAnalyzer(BaseAnalyzer):
         Fetch credit spread metrics grouped by option_type (Call/Put) as top-level,
         then by point spreads and time buckets with min/max/avg calculations.
         """
+        print("=============================get_latest_results...")
         try:
-            from datetime import datetime, time
-
             # Define time buckets
             time_buckets = [
                 ("8:30-8:45", 8, 30, 8, 45),
@@ -313,7 +315,7 @@ class SpreadAnalyzer(BaseAnalyzer):
                         datetime.combine(today, time(start_h, start_m)))
                     bucket_end = self.cst_tz.localize(
                         datetime.combine(today, time(end_h, end_m)))
-
+                    
                     # Fetch all raw data for this time range
                     records = db.session.query(
                         CreditSpreadMetrics.point_spread,
@@ -324,48 +326,62 @@ class SpreadAnalyzer(BaseAnalyzer):
                         CreditSpreadMetrics.timestamp >= bucket_start,
                         CreditSpreadMetrics.timestamp < bucket_end
                     ).all()
-
+                    
                     # Process records
                     for point_spread, delta_bucket, option_type, credit in records:
-                        point_key = f"{point_spread} Point"
-                        delta_key = f"{delta_bucket:.2f}"
-                        option_key = 'Call' if option_type == 'call' else 'Put'
-                        
-                        # Initialize data structures if needed
-                        if point_key not in output[option_key]:
-                            output[option_key][point_key] = {}
-                        if bucket_name not in output[option_key][point_key]:
-                            output[option_key][point_key][bucket_name] = {
-                                'Ave': {}, 'High': {}, 'Low': {}
-                            }
-                        
-                        # Initialize delta bucket if needed
-                        if delta_key not in output[option_key][point_key][bucket_name]['Ave']:
-                            output[option_key][point_key][bucket_name]['Ave'][delta_key] = []
-                            output[option_key][point_key][bucket_name]['High'][delta_key] = []
-                            output[option_key][point_key][bucket_name]['Low'][delta_key] = []
-                        
-                        # Collect credit values
-                        output[option_key][point_key][bucket_name]['Ave'][delta_key].append(credit)
-                        output[option_key][point_key][bucket_name]['High'][delta_key].append(credit)
-                        output[option_key][point_key][bucket_name]['Low'][delta_key].append(credit)
+                        try:
+                            # Skip None values
+                            if credit is None:
+                                continue
+                                
+                            # Ensure credit is Decimal (handle both Decimal and float)
+                            credit = Decimal(str(credit))
+                            # print("=========credit:", credit)
+                            point_key = f"{point_spread} Point"
+                            delta_key = f"{float(delta_bucket):.2f}"  # Ensure float conversion
+                            option_key = 'Call' if option_type == 'call' else 'Put'
+                            
+                            # Initialize data structures if needed
+                            if point_key not in output[option_key]:
+                                output[option_key][point_key] = {}
+                            if bucket_name not in output[option_key][point_key]:
+                                output[option_key][point_key][bucket_name] = {
+                                    'Ave': {}, 'High': {}, 'Low': {}
+                                }
+                            
+                            # Initialize delta bucket if needed
+                            if delta_key not in output[option_key][point_key][bucket_name]['Ave']:
+                                output[option_key][point_key][bucket_name]['Ave'][delta_key] = []
+                            
+                            # Append credit value
+                            output[option_key][point_key][bucket_name]['Ave'][delta_key].append(credit)
+                        except Exception as e:
+                            logger.error(f"Error processing record: {str(e)}")
+                            continue
 
+                    
                     # Calculate final stats for this bucket
                     for option_key in ['Call', 'Put']:
                         for point_key in output[option_key]:
                             if bucket_name in output[option_key][point_key]:
                                 for delta_key in output[option_key][point_key][bucket_name]['Ave']:
                                     credits = output[option_key][point_key][bucket_name]['Ave'][delta_key]
-                                    if credits:
-                                        output[option_key][point_key][bucket_name]['Ave'][delta_key] = round(sum(credits)/len(credits), 2)
-                                        output[option_key][point_key][bucket_name]['High'][delta_key] = round(max(credits), 2)
-                                        output[option_key][point_key][bucket_name]['Low'][delta_key] = round(min(credits), 2)
+                                    if credits:  # Only calculate if we have values
+                                        try:
+                                            # Convert to float for rounding (handles Decimal properly)
+                                            credits_float = [float(c) for c in credits]
+                                            output[option_key][point_key][bucket_name]['Ave'][delta_key] = round(sum(credits_float)/len(credits_float), 2)
+                                            output[option_key][point_key][bucket_name]['High'][delta_key] = round(max(credits_float), 2)
+                                            output[option_key][point_key][bucket_name]['Low'][delta_key] = round(min(credits_float), 2)
+                                        except Exception as e:
+                                            logger.error(f"Error calculating stats for {option_key}/{point_key}/{bucket_name}/{delta_key}: {str(e)}")
+                                            # Set defaults or skip
+                                            continue
 
                 except Exception as e:
                     logger.error(f"Error processing {bucket_name}: {str(e)}")
                     continue
                 
-            print("=============================Final output:", output)
             return output
 
         except Exception as e:

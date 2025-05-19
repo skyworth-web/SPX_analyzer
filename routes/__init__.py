@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from models import db, SPXOptionStream
 
 def create_blueprint():
     bp = Blueprint('main', __name__)
@@ -6,7 +7,8 @@ def create_blueprint():
     @bp.route('/new-dashboard/')
     @bp.route('/new-dashboard/dashboard')
     def dashboard():
-        return render_template('dashboard.html')
+        stream_data = get_spx_option_stream_data()  # Replace with your real data source
+        return render_template("dashboard.html", stream_data=stream_data)
 
     @bp.route('/new-dashboard/analyzer-workspace')
     def analyzer_workspace():
@@ -32,3 +34,15 @@ def init_routes(app):
     app.register_blueprint(macro_overlay_bp, url_prefix='/new-dashboard/macro-overlay')
     app.register_blueprint(iron_condor_bp, url_prefix='/new-dashboard/iron-condor')
     app.register_blueprint(short_vertical_bp, url_prefix='/new-dashboard/shortvertical')
+
+def get_spx_option_stream_data(limit=1000):
+    """
+    Fetch latest SPX 0DTE option stream data from the database.
+    """
+    rows = (
+        db.session.query(SPXOptionStream)
+        .order_by(SPXOptionStream.timestamp.desc())
+        .limit(limit)
+        .all()
+    )
+    return [row.as_dict() for row in rows]

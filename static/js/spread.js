@@ -7,10 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
         loadingIndicator.classList.remove("d-none");
 
         try {
-            const response = await fetch("/analyze_spreads");  // Adjust this if your endpoint differs
+            const response = await fetch("/new-dashboard/spread/data");
             if (!response.ok) throw new Error("Network response was not ok");
 
-            const data = await response.json();
+            const text = await response.text(); // Get raw text first
+            const jsonData = text.replace(/NaN/g, 'null'); // Replace NaN with null
+            const data = JSON.parse(jsonData); // Now parse the modified text
+
             renderTables(data);
 
             const now = new Date();
@@ -23,12 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    function renderTables(data) {
-        const container = document.querySelector("#content"); // Replace with a better selector if needed
 
-        // Remove old tables
-        const oldTables = container.querySelectorAll("table");
-        oldTables.forEach((table) => table.remove());
+
+    function renderTables(data) {
+        const container = document.querySelector("#spread-results");
+        container.innerHTML = ""; // Clear previous results
 
         ["Call", "Put"].forEach((type) => {
             const typeHeader = document.createElement("h3");
@@ -48,10 +50,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const thead = document.createElement("thead");
                 thead.className = "thead-dark";
-
                 const trHead = document.createElement("tr");
                 trHead.innerHTML = `<th>Time Bucket</th>`;
 
+                // Get deltas dynamically
                 const deltas = Object.keys(buckets[Object.keys(buckets)[0]]["Ave"]);
                 deltas.forEach((delta) => {
                     const th = document.createElement("th");
@@ -72,7 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         deltas.forEach((delta) => {
                             const td = document.createElement("td");
-                            td.textContent = buckets[bucket][stat][delta].toFixed(2);
+                            const val = buckets[bucket][stat][delta];
+                            td.textContent = typeof val === 'number' ? val.toFixed(2) : (isNaN(val) ? 'N/A' : val);
                             row.appendChild(td);
                         });
 
@@ -88,4 +91,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+
 });

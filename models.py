@@ -50,6 +50,9 @@ class SPXOptionStream(db.Model):
     put_iv = db.Column(db.Float)
     put_net_chg = db.Column(db.Float)
 
+    def as_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
 class Position(db.Model):
     __tablename__ = 'positions'
     

@@ -120,27 +120,27 @@ class BaseAnalyzer:
             self.logger.error(f"Failed to fetch market data: {str(e)}")
             return None
         
-    def _log_results(self, results):
-        """Store results to spx_analysis table"""
-        if not results or 'error' in results:
-            return
+    # def _log_results(self, results):
+    #     """Store results to spx_analysis table"""
+    #     if not results or 'error' in results:
+    #         return
             
-        try:
-            record = SPXAnalysis(
-                timestamp=datetime.now(),
-                spx_price=results.get('spot_price'),
-                opportunity={
-                    'analyzer': self.name,
-                    'data': results
-                }
-            )
+    #     try:
+    #         record = SPXAnalysis(
+    #             timestamp=datetime.now(),
+    #             spx_price=results.get('spot_price'),
+    #             opportunity={
+    #                 'analyzer': self.name,
+    #                 'data': results
+    #             }
+    #         )
             
-            db.session.add(record)
-            db.session.commit()
+    #         db.session.add(record)
+    #         db.session.commit()
             
-            self.last_results = results
-            self.last_run = datetime.now()
-            # self.logger.info(f"Analysis completed at {self.last_run}")
-        except Exception as e:
-            db.session.rollback()
-            self.logger.error(f"Failed to save results: {str(e)}")
+    #         self.last_results = results
+    #         self.last_run = datetime.now()
+    #         # self.logger.info(f"Analysis completed at {self.last_run}")
+    #     except Exception as e:
+    #         db.session.rollback()
+    #         self.logger.error(f"Failed to save results: {str(e)}")

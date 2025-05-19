@@ -1,145 +1,30 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
 {% block content %}
-<h1 class="text-center my-4">Analytics Dashboard</h1>
+<h2>SPX Option Stream Dashboard</h2>
 
-<div class="row">
-  <div class="col-xl-6 col-lg-12 col-md-12">
-    <!-- Call Credit Spread Pricing -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>Call Credit Spread Pricing</h5>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive mb-4">
-          <table class="table table-bordered table-sm text-center" id="call-pricing-table">
-            <thead class="thead-dark">
-              <tr>
-                <th>*Adjustable Spread</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Top 3 Mispriced Calls -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>Top 3 Mispriced Calls</h5>
-      </div>
-      <div class="card-body" id="mispricing-calls">Loading...</div>
-    </div>
-
-    <!-- IV Tail Delta to OI (Calls) -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>IV/Tail Delta to OI % (Calls)</h5>
-      </div>
-      <div class="card-body" id="iv-tail-call">Loading...</div>
-    </div>
-  </div>
-
-  <div class="col-xl-6 col-lg-12 col-md-12 mb-4">
-    <!-- Put Credit Spread Pricing -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>Put Credit Spread Pricing</h5>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive mb-4">
-          <table class="table table-bordered table-sm text-center" id="put-pricing-table">
-            <thead class="thead-dark">
-              <tr>
-                <th>*Adjustable Spread</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Top 3 Mispriced Puts -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>Top 3 Mispriced Puts</h5>
-      </div>
-      <div class="card-body" id="mispricing-puts">Loading...</div>
-    </div>
-
-    <!-- IV Tail Delta to OI (Puts) -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>IV/Tail Delta to OI % (Puts)</h5>
-      </div>
-      <div class="card-body" id="iv-tail-put">Loading...</div>
-    </div>
-  </div>
+<div class="table-responsive mt-4">
+  <table class="table table-bordered table-hover table-sm text-center">
+    <thead class="thead-dark">
+      <tr>
+        {% if stream_data and stream_data|length > 0 %}
+        {% for key in stream_data[0].keys() %}
+        <th>{{ key|capitalize }}</th>
+        {% endfor %}
+        {% else %}
+        <th>No data available</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in stream_data %}
+      <tr>
+        {% for value in row.values() %}
+        <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
-
-<div class="row">
-  <div class="col-md-6">
-    <!-- Skew Alerts -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>Skew Curve Alerts</h5>
-      </div>
-      <div class="card-body" id="skew-curve-alerts">Loading...</div>
-    </div>
-  </div>
-  <div class="col-md-6">
-    <!-- Delta Slope Shift -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>Delta Slope Shift</h5>
-      </div>
-      <div class="card-body" id="delta-slope-shifts">Loading...</div>
-    </div>
-  </div>
-</div>
-
-<!-- Include spread logic -->
-<script src="{{ url_for('static', filename='js/spread.js') }}"></script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Load spread pricing via existing spread.js
-    loadSpreadData();
-
-    // Other dashboard sections
-    fetchSection("/api/mispricing/calls", renderMispricing, "mispricing-calls");
-    fetchSection("/api/mispricing/puts", renderMispricing, "mispricing-puts");
-    fetchSection("/api/skew-alerts", renderListItem, "skew-curve-alerts");
-    fetchSection("/api/delta-slope", renderListItem, "delta-slope-shifts");
-    fetchSection("/api/iv-tail-oi/call", renderTextValue, "iv-tail-call");
-    fetchSection("/api/iv-tail-oi/put", renderTextValue, "iv-tail-put");
-  });
-
-  function fetchSection(url, renderFunc, elementId) {
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => renderFunc(data, elementId))
-      .catch((err) => {
-        document.getElementById(elementId).textContent = "Error loading data.";
-        console.error(`Failed to load ${url}`, err);
-      });
-  }
-
-  function renderMispricing(data, elementId) {
-    const html = data.slice(0, 3).map(item =>
-      `<li>Strike ${item.strike} → <strong>${item.percent_deviation.toFixed(2)}%</strong></li>`
-    ).join("");
-    document.getElementById(elementId).innerHTML = `<ul>${html}</ul>`;
-  }
-
-  function renderListItem(data, elementId) {
-    const html = data.map(item => `<li>${Object.values(item).join(" | ")}</li>`).join("");
-    document.getElementById(elementId).innerHTML = `<ul>${html}</ul>`;
-  }
-
-  function renderTextValue(value, elementId) {
-    document.getElementById(elementId).textContent = `${value}%`;
-  }
-</script>
 {% endblock %}
